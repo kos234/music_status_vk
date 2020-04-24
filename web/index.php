@@ -18,8 +18,11 @@
             });
             console.log("sssssssssssss");
 
-            function yourCallback(device_id) {
-                console.log("sda", device_id)
+            function yourCallback(position,
+                                  duration,
+                                  track_window) {
+                console.log("sda", position)
+                console.log("sda", duration)
             }
 
             player.connect().then(success => {
@@ -32,7 +35,9 @@
                 }
             });
 
-            player.addListener('player_state_changed', yourCallback(device_id));
+            player.addListener('player_state_changed', yourCallback(position,
+                duration,
+                track_window: { current_track }));
 
             player.pause().then(() => {
                 console.log('Paused!');
