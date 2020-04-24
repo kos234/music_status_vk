@@ -17,21 +17,21 @@
         });
 
         // Error handling
-        player.addEventListener('initialization_error', ({ message }) => { console.error(message); });
-        player.addEventListener('authentication_error', ({ message }) => { console.error(message); });
-        player.addEventListener('account_error', ({ message }) => { console.error(message); });
-        player.addEventListener('playback_error', ({ message }) => { console.error(message); });
+        player.addListener('initialization_error', ({ message }) => { console.error(message); });
+        player.addListener('authentication_error', ({ message }) => { console.error(message); });
+        player.addListener('account_error', ({ message }) => { console.error(message); });
+        player.addListener('playback_error', ({ message }) => { console.error(message); });
 
         // Playback status updates
-        player.addEventListener('player_state_changed', state => { console.log(state); });
+        player.addListener('player_state_changed', state => { console.log(state); });
 
         // Ready
-        player.addEventListener('ready', ({ device_id }) => {
+        player.addListener('ready', ({ device_id }) => {
             console.log('Ready with Device ID', device_id);
         });
 
         // Not Ready
-        player.addEventListener('not_ready', ({ device_id }) => {
+        player.addListener('not_ready', ({ device_id }) => {
             console.log('Device ID has gone offline', device_id);
         });
 
