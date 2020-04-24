@@ -15,7 +15,7 @@
             },
             volume: 0.5
         });
-
+        console.log("ssssssssssssss");
         player.connect().then(success => {
             if (success) {
                 console.log('The Web Playback SDK successfully connected to Spotify!');
