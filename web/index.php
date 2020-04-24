@@ -37,7 +37,7 @@
 
             player.addListener('player_state_changed', yourCallback(position,
                 duration,
-                track_window: { current_track }));
+                track_window: { current_track });
 
             player.pause().then(() => {
                 console.log('Paused!');
