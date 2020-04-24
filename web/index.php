@@ -3,6 +3,8 @@
     <title>Тест</title>
 </head>
 <body>
+<script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
 <script src="https://sdk.scdn.co/spotify-player.js"></script>
 <script>
     componentDidMount(){
