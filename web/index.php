@@ -16,10 +16,10 @@
             getOAuthToken: cb => { cb(token); }
         });
 
-        player.addEventListener('change', updateCurrentTrack);
+        model.player.addEventListener('change', updateCurrentTrack);
 
         function updateCurrentTrack(){
-            player.load('track').done(function (player) {
+            model.player.load('track').done(function (player) {
                 if(player.track.uri != currentTrack.uri){
                     currentTrack = player.track;
                     console.log("YES FUCK")
