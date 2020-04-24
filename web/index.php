@@ -23,11 +23,6 @@
         player.addListener('playback_error', ({ message }) => { console.error(message); });
 
         // Playback status updates
-        player.addListener('player_state_changed', state => {
-            console.log("test");
-            console.log(state); });
-
-        // Ready
 
         player.addListener('player_state_changed', ({
                                                         position,
@@ -37,6 +32,11 @@
             console.log('Currently Playing', current_track);
             console.log('Position in Song', position);
             console.log('Duration of Song', duration);
+        });
+
+        // Ready
+        player.addListener('ready', ({ device_id }) => {
+            console.log('Ready with Device ID', device_id);
         });
 
         // Not Ready
