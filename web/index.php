@@ -24,7 +24,7 @@
                     currentTrack = player.track;
                     console.log("YES FUCK")
                 }
-            }
+            });
         }
 
         // Error handling
