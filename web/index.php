@@ -16,6 +16,17 @@
             getOAuthToken: cb => { cb(token); }
         });
 
+        models.player.addEventListener('change', updateCurrentTrack);
+
+        function updateCurrentTrack(){
+            models.player.load('track').done(function (player) {
+                if(player.track.uri != currentTrack.uri){
+                    currentTrack = player.track;
+                    console.log("YES FUCK")
+                }
+            }
+        }
+
         // Error handling
         player.addListener('initialization_error', ({ message }) => { console.error(message); });
         player.addListener('authentication_error', ({ message }) => { console.error(message); });
