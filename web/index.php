@@ -28,8 +28,15 @@
             console.log(state); });
 
         // Ready
-        player.addListener('ready', ({ device_id }) => {
-            console.log('Ready with Device ID', device_id);
+
+        player.addListener('player_state_changed', ({
+                                                        position,
+                                                        duration,
+                                                        track_window: { current_track }
+                                                    }) => {
+            console.log('Currently Playing', current_track);
+            console.log('Position in Song', position);
+            console.log('Duration of Song', duration);
         });
 
         // Not Ready
