@@ -17,22 +17,26 @@
                 volume: 0.5
             });
             console.log("sssssssssssss");
+
+            function yourCallback(device_id) {
+                console.log("sda", device_id)
+            }
+
             player.connect().then(success => {
                 if (success) {
                     console.log('The Web Playback SDK successfully connected to Spotify!');
 
                     player.addListener('ready', ({ device_id }) => {
                         console.log('Connected with Device ID', device_id);
-
-                        player.addListener('player_state_changed', ({position, duration, track_window: {current_track}}) => {
-                            console.log('Currently Playing', current_track);
-                            console.log('Position in Song', position);
-                            console.log('Duration of Song', duration);
-                        });
                     });
                 }
             });
 
+            player.addListener('player_state_changed', yourCallback(device_id));
+
+            player.pause().then(() => {
+                console.log('Paused!');
+            });
         };
 
 </script>
