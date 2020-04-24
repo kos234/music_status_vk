@@ -10,22 +10,11 @@
 <script src="https://sdk.scdn.co/spotify-player.js"></script>
 <script>
     window.onSpotifyWebPlaybackSDKReady = () => {
-        const token = "BQAEVxpVHWfol0mzW-a46tKZPfDRn-ViV8i0UP7M71YnXNzOcg1ANQkOCabX-5jTzoyVsdu-Q4BkJHeKYGJICGp-U0QfSj-D1-9QcCXQkv_FCYH9BFxZFVQ7kg9KbXmxdnDyxKFOZMzCSNuhhx6hvJWBWVCmnqRszaSo6gb5iFQTA6cBvK0NCBmgNlgHjbHEqUmX2iUsHXjBfAaDKleHVfFc0XLoMFE3Ul7BETyc2svOA0wGtdd-_J4gzIszPyTkV1v9I3oy-IFBAQeP9e3cSAUPUIXU3BgQBjRQHuEYuaE";
+        const token = "BQB3ia9xnrOHAOzNW7NMTfCW8-WhUhO5l4L6w6ZKiaLz9KpuR8GLgNGgebEum0BR778dPj6mzMpbOQpZAYI";
         const player = new Spotify.Player({
             name: 'Web Playback SDK Quick Start Player',
             getOAuthToken: cb => { cb(token); }
         });
-
-        model.player.addEventListener('change', updateCurrentTrack);
-
-        function updateCurrentTrack(){
-            model.player.load('track').done(function (player) {
-                if(player.track.uri != currentTrack.uri){
-                    currentTrack = player.track;
-                    console.log("YES FUCK")
-                }
-            });
-        }
 
         // Error handling
         player.addListener('initialization_error', ({ message }) => { console.error(message); });
