@@ -29,27 +29,28 @@ ENGINE = InnoDB;"); //Создаем таблицу в бд
 
       while (true){
           $result_set = $mysqli->query("SELECT `operationId` FROM `dataSettings` ");
+
           if ($result_set !== false) {
               $operationId = $result_set->fetch_assoc();
           } else { // обработка ошибки
               echo "error: " . $mysqli->error;
               break;
           }
-          if($operationId == "off"){continue; error_log("00000");}
-          elseif ($operationId == "start"){
-              error_log("start");
+
+          if($operationId['operationId'] == "off"){continue;}
+          elseif ($operationId['operationId'] == "start"){
               $statusJSON = json_decode(file_get_contents("https://api.vk.com/method/status.get?access_token=" . $tokenVk . "&user_id=". $user_id ."&v=". $versionAPI));
               $status = $statusJSON->response->text;
               $mysqli->query("UPDATE dataSettings set lastStatus = $status , operationID = 'on'");
               error_log($status);
               break;
-          }elseif ($operationId == "on"){
+          }elseif ($operationId['operationId'] == "on"){
               error_log("22222");
             break;
-          }elseif ($operationId == "finish"){
+          }elseif ($operationId['operationId'] == "finish"){
 
           }else{
-              error_log($operationId . " type " . gettype($operationId));
+              error_log($operationId['operationId'] . " type " . gettype($operationId['operationId']));
           }
       }
       error_log("End");
