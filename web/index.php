@@ -20,30 +20,32 @@ $mysqli = new mysqli($server, $username, $password,$db); //Подключаем�
       die('Ошибка подключения (' . $mysqli->connect_errno . ') '. $mysqli->connect_error); //если нет выводим ошибку и выходим из кода
   } else {
       $mysqli->query("SET NAMES 'utf8'");//Устанавливаем кодировку
+
       error_log("----------");
       $mysqli->query("CREATE TABLE IF NOT EXISTS `dataSettings` ( 
 	`operationId` TinyInt( 255 ) NOT NULL DEFAULT 0,
 	`lastStatus` Text NULL )
 ENGINE = InnoDB;"); //Создаем таблицу в бд
-$i = 0;
-      while ($i < 1){
+
+      while (true){
           $operationId = $mysqli->query("SELECT `operationId` FROM `data` ");
-          if($operationId == false){continue; error_log("00000");}
-          elseif ($operationId == true){
+          if($operationId == 100){continue; error_log("00000");}
+          elseif ($operationId == 101){
               error_log("11111");
               $statusJSON = json_decode(file_get_contents("https://api.vk.com/method/status.get?access_token=" . $tokenVk . "&user_id=". $user_id ."&v=". $versionAPI));
               $status = $statusJSON->response->text;
-              $mysqli->query("UPDATE dataSettings set lastStatus = $status , operationID = 2");
+              //$mysqli->query("UPDATE dataSettings set lastStatus = $status , operationID = 2");
               error_log($status);
-              $i = 1;
-          }elseif ($operationId == 2){
+              break;
+          }elseif ($operationId == 102){
               error_log("22222");
             break;
-          }elseif ($operationId == 3){
+          }elseif ($operationId == 103){
 
           }else{
               error_log("Pizda");
           }
       }
+      error_log("End");
   }
     ?>
