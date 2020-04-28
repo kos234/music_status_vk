@@ -1,20 +1,44 @@
 <?php
-//ini_set('max_execution_time', 31536000); // Чтобы наш скрипт выполнялся
+ini_set('max_execution_time', 31536000); // Чтобы наш скрипт выполнялся
 
 $urlDB=parse_url(getenv("CLEARDB_DATABASE_URL")); //Подключаемся к бд
+
+$tokenVk = "2816968ae753fdf5d35ed88fa6b396a219b0712f28e38d169cd0a04e8851c57eae6a29077cdfa8493a241";
+$versionAPI = "5.103";
+$user_id = "388061716";
 
 $server = $urlDB["host"];
 $username = $urlDB["user"];
 $password = $urlDB["pass"];
 $db = substr($urlDB["path"],1);
 
-echo $server.' <- сервер '.$username.' <- имя пользователя '.$password.' <- пароль '.$db.' <- база данных'; //Если нужно узнать данные бд
+//echo $server.' <- сервер '.$username.' <- имя пользователя '.$password.' <- пароль '.$db.' <- база данных'; //Если нужно узнать данные бд
 
 $mysqli = new mysqli($server, $username, $password,$db); //Подключаемся
 
   if ($mysqli->connect_error) {//проверка подключились ли мы
       die('Ошибка подключения (' . $mysqli->connect_errno . ') '. $mysqli->connect_error); //если нет выводим ошибку и выходим из кода
   } else {
+      $mysqli->query("SET NAMES 'utf8'");//Устанавливаем кодировку
+
+      $mysqli->query("CREATE TABLE IF NOT EXISTS `data` ( 
+	`operationId` TinyInt( 255 ) NOT NULL DEFAULT 0,
+	`lastStatus` Text NULL )
+ENGINE = InnoDB;"); //Создаем таблицу в бд
+
+      while (true){
+          $operationId = $mysqli->query("SELECT `operationId` FROM `data` ");
+          if($operationId == 0) continue;
+          elseif ($operationId == 1){
+              $statusJSON = json_decode(file_get_contents("https://api.vk.com/method/status.get?access_token=" . $token . "&user_id=". $user_id ."&v=". $v));
+              $status = $statusJSON->response[0]->text;
+              $mysqli->query("UPDATE `data` set `lastStatus` = $status , `operationID` = 2");
+          }elseif ($operationId == 2){
+            break;
+          }elseif ($operationId == 3){
+
+          }
+      }
 
   }
     ?>
