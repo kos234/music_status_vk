@@ -29,6 +29,7 @@ ENGINE = InnoDB;"); //Создаем таблицу в бд
 
       while (true){
           $operationId = $mysqli->query("SELECT `operationId` FROM `data` ");
+          $operationId = $operationId->fetch_assoc();
           if($operationId == "off"){continue; error_log("00000");}
           elseif ($operationId == "start"){
               error_log("start");
