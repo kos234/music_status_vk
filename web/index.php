@@ -33,28 +33,29 @@
             console.error(message);
         });
 
-        let state = await player.getCurrentState();
-        if (state == null) {
-            console.error("Playback isn't on this device yet");
-        } else {
-            let {
-                id,
-                uri: track_uri,
-                name: track_name,
-                duration_ms,
-                artists,
-                album: {
-                    name: album_name,
-                    uri: album_uri,
-                    images: album_images
-                }
-            } = state.track_window.current_track;
-            console.log(`You're listening to ${track_name} by ${artists[0].name}!`);
-        }
 
         // Ready
         player.addListener('ready', ({device_id}) => {
             console.log('Ready with Device ID', device_id);
+
+            let state = await player.getCurrentState();
+            if (state == null) {
+                console.error("Playback isn't on this device yet");
+            } else {
+                let {
+                    id,
+                    uri: track_uri,
+                    name: track_name,
+                    duration_ms,
+                    artists,
+                    album: {
+                        name: album_name,
+                        uri: album_uri,
+                        images: album_images
+                    }
+                } = state.track_window.current_track;
+                console.log(`You're listening to ${track_name} by ${artists[0].name}!`);
+            }
         });
 
         // Not Ready
