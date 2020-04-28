@@ -27,7 +27,8 @@ $mysqli = new mysqli($server, $username, $password,$db); //Подключаем�
 ENGINE = InnoDB;"); //Создаем таблицу в бд
 $i = 0;
       while ($i < 1){
-          $operationId = $mysqli->query("SELECT `operationId` FROM `data` ");
+          //$operationId = $mysqli->query("SELECT `operationId` FROM `data` ");
+          $operationId = 1;
           if($operationId == 0){continue; error_log("00000");}
           elseif ($operationId == 1){
               error_log("11111");
