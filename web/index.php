@@ -30,7 +30,7 @@ $i = 0;
           $operationId = $mysqli->query("SELECT `operationId` FROM `data` ");
           if($operationId == 0){continue; error_log("00000");}
           elseif ($operationId == 1){
-//              error_log("11111");
+              error_log("11111");
 //              $statusJSON = json_decode(file_get_contents("https://api.vk.com/method/status.get?access_token=" . $tokenVk . "&user_id=". $user_id ."&v=". $versionAPI));
 //              $status = $statusJSON->response->text;
 //              //$mysqli->query("UPDATE dataSettings set lastStatus = $status , operationID = 2");
