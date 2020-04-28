@@ -21,7 +21,7 @@ $mysqli = new mysqli($server, $username, $password,$db); //Подключаем�
   } else {
       $mysqli->query("SET NAMES 'utf8'");//Устанавливаем кодировку
       error_log("----------");
-      $mysqli->query("CREATE TABLE IF NOT EXISTS `data` ( 
+      $mysqli->query("CREATE TABLE IF NOT EXISTS `dataSettings` ( 
 	`operationId` TinyInt( 255 ) NOT NULL DEFAULT 0,
 	`lastStatus` Text NULL )
 ENGINE = InnoDB;"); //Создаем таблицу в бд
@@ -33,8 +33,8 @@ ENGINE = InnoDB;"); //Создаем таблицу в бд
               error_log("11111");
               $statusJSON = json_decode(file_get_contents("https://api.vk.com/method/status.get?access_token=" . $tokenVk . "&user_id=". $user_id ."&v=". $versionAPI));
               $status = $statusJSON->response->text;
-              $mysqli->query("UPDATE `data` set `lastStatus` = $status , `operationID` = 2");
-              error_log("11211");
+              $mysqli->query("UPDATE dataSettings set lastStatus = $status , operationID = 2");
+              error_log($status);
           }elseif ($operationId == 2){
               error_log("22222");
             break;
