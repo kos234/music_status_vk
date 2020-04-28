@@ -6,7 +6,7 @@ $urlDB=parse_url(getenv("CLEARDB_DATABASE_URL")); //Подключаемся к 
 $server = $urlDB["host"];
 $username = $urlDB["user"];
 $password = $urlDB["pass"];
-$db = substr($urlDB["path"],1)
+$db = substr($urlDB["path"],1);
 
 echo $server.' <- сервер '.$username.' <- имя пользователя '.$password.' <- пароль '.$db.' <- база данных'; //Если нужно узнать данные бд
 
