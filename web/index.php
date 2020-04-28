@@ -43,7 +43,7 @@ ENGINE = InnoDB;"); //Создаем таблицу в бд
           }elseif ($operationId == 103){
 
           }else{
-              error_log("Pizda");
+              error_log($operationId);
           }
       }
       error_log("End");
