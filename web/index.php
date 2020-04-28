@@ -1,5 +1,5 @@
 <?php
-ini_set('max_execution_time', 31536000); // Чтобы наш скрипт выполнялся
+ini_set('max_execution_time', 900); // Чтобы наш скрипт выполнялся
 
 $urlDB=parse_url(getenv("CLEARDB_DATABASE_URL")); //Подключаемся к бд
 
@@ -26,7 +26,7 @@ $mysqli = new mysqli($server, $username, $password,$db); //Подключаем�
 	`lastStatus` Text NULL )
 ENGINE = InnoDB;"); //Создаем таблицу в бд
 $i = 0;
-      while ($i != 1){
+      while ($i < 1){
           $operationId = $mysqli->query("SELECT `operationId` FROM `data` ");
           if($operationId == 0){continue; error_log("00000");}
           elseif ($operationId == 1){
