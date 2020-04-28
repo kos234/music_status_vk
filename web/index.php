@@ -28,7 +28,7 @@ $mysqli = new mysqli($server, $username, $password,$db); //Подключаем�
 ENGINE = InnoDB;"); //Создаем таблицу в бд
 
       while (true){
-          $result_set = $mysqli->query("SELECT `operationId` FROM `data` ");
+          $result_set = $mysqli->query("SELECT `operationId` FROM `dataSettings` ");
           if ($result_set !== false) {
               $operationId = $result_set->fetch_assoc();
           } else { // обработка ошибки
