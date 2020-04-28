@@ -28,17 +28,16 @@ ENGINE = InnoDB;"); //Создаем таблицу в бд
 
       while (true){
           $operationId = $mysqli->query("SELECT `operationId` FROM `data` ");
-          if($operationId == 0) continue;
-          elseif ($operationId == 1){
+          if($operationId == "0") continue;
+          elseif ($operationId == "1"){
               $statusJSON = json_decode(file_get_contents("https://api.vk.com/method/status.get?access_token=" . $tokenVk . "&user_id=". $user_id ."&v=". $versionAPI));
               $status = $statusJSON->response->text;
               $mysqli->query("UPDATE `data` set `lastStatus` = $status , `operationID` = 2");
-          }elseif ($operationId == 2){
+          }elseif ($operationId == "2"){
             break;
-          }elseif ($operationId == 3){
+          }elseif ($operationId == "3"){
 
           }
       }
-
   }
     ?>
