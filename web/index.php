@@ -26,24 +26,24 @@ $mysqli = new mysqli($server, $username, $password,$db); //Подключаем�
 	`lastStatus` Text NULL )
 ENGINE = InnoDB;"); //Создаем таблицу в бд
 $i = 0;
-//      while ($i < 1){
-//          $operationId = $mysqli->query("SELECT `operationId` FROM `data` ");
-//          if($operationId == 0){continue; error_log("00000");}
-//          elseif ($operationId == 1){
-////              error_log("11111");
-////              $statusJSON = json_decode(file_get_contents("https://api.vk.com/method/status.get?access_token=" . $tokenVk . "&user_id=". $user_id ."&v=". $versionAPI));
-////              $status = $statusJSON->response->text;
-////              //$mysqli->query("UPDATE dataSettings set lastStatus = $status , operationID = 2");
-////              error_log($status);
-//              $i = 1;
-//          }elseif ($operationId == 2){
-//              error_log("22222");
-//            break;
-//          }elseif ($operationId == 3){
-//
-//          }else{
-//              error_log("Pizda");
-//          }
-//      }
+      while ($i < 1){
+          $operationId = $mysqli->query("SELECT `operationId` FROM `data` ");
+          if($operationId == 0){continue; error_log("00000");}
+          elseif ($operationId == 1){
+//              error_log("11111");
+//              $statusJSON = json_decode(file_get_contents("https://api.vk.com/method/status.get?access_token=" . $tokenVk . "&user_id=". $user_id ."&v=". $versionAPI));
+//              $status = $statusJSON->response->text;
+//              //$mysqli->query("UPDATE dataSettings set lastStatus = $status , operationID = 2");
+//              error_log($status);
+              $i = 1;
+          }elseif ($operationId == 2){
+              error_log("22222");
+            break;
+          }elseif ($operationId == 3){
+
+          }else{
+              error_log("Pizda");
+          }
+      }
   }
     ?>
