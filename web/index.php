@@ -23,24 +23,24 @@ $mysqli = new mysqli($server, $username, $password,$db); //Подключаем�
 
       error_log("----------");
       $mysqli->query("CREATE TABLE IF NOT EXISTS `dataSettings` ( 
-	`operationId` TinyInt( 255 ) NOT NULL DEFAULT 0,
-	`lastStatus` Text NULL )
+	`operationId` VarChar( 255 ) NOT NULL DEFAULT 'off',
+	`lastStatus` VarChar( 255 ) NULL )
 ENGINE = InnoDB;"); //Создаем таблицу в бд
 
       while (true){
           $operationId = $mysqli->query("SELECT `operationId` FROM `data` ");
-          if($operationId == 100){continue; error_log("00000");}
-          elseif ($operationId == 101){
-              error_log("11111");
+          if($operationId == "off"){continue; error_log("00000");}
+          elseif ($operationId == "start"){
+              error_log("start");
               $statusJSON = json_decode(file_get_contents("https://api.vk.com/method/status.get?access_token=" . $tokenVk . "&user_id=". $user_id ."&v=". $versionAPI));
               $status = $statusJSON->response->text;
-              //$mysqli->query("UPDATE dataSettings set lastStatus = $status , operationID = 2");
+              $mysqli->query("UPDATE dataSettings set lastStatus = $status , operationID = 'on'");
               error_log($status);
               break;
-          }elseif ($operationId == 102){
+          }elseif ($operationId == "on"){
               error_log("22222");
             break;
-          }elseif ($operationId == 103){
+          }elseif ($operationId == "finish"){
 
           }else{
               error_log($operationId . " type " . gettype($operationId));
