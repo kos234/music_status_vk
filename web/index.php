@@ -28,8 +28,13 @@ $mysqli = new mysqli($server, $username, $password,$db); //Подключаем�
 ENGINE = InnoDB;"); //Создаем таблицу в бд
 
       while (true){
-          $result = $mysqli->query("SELECT `operationId` FROM `data` ");
-          $operationId = $result->fetch_assoc();
+          $result_set = $mysqli->query("SELECT `operationId` FROM `data` ");
+          if ($result_set !== false) {
+              $operationId = $result_set->fetch_assoc();
+          } else { // обработка ошибки
+              echo "error: " . $mysqli->error;
+              break;
+          }
           if($operationId == "off"){continue; error_log("00000");}
           elseif ($operationId == "start"){
               error_log("start");
