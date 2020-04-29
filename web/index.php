@@ -4,7 +4,7 @@ ini_set('max_execution_time', 900); // Чтобы наш скрипт выпол
 require '/app/vendor/autoload.php';
 
 $client = new GuzzleHttp\Client();
-$res = $client->post('https://api.spotify.com/v1/me', [
+$res = $client->post('https://api.spotify.com/v1/me/player/currently-playing?market=ES&additional_types=episode', [
     'headers' => [
         'Authorization' =>  ['Bearer ' . "BQAKmny4Ul7HS8I4TOueVYuHgSU8OUzCw9B_h2ZPs8STWaLLnvsYzjChPp8T0gfyD5bgeKK3Gzq1zhQYmzXrXIONZgv6_NgWDzgtG8yF7550NIqqsyLmWm5-aOwUs5vaXz4NGnrTNf5SRvQsHnhfrzhGbPWeBUOgrj7zWqjRp4Adbi-kqCXkFR5ReHbViozwRF711HlmDResIZXH9QeuQdMtzMgxfiOrfRUNexZiCA11e6_5hbTCxnfNwg5wOdPP3iD0G7A87kCZ485P2edimpVnQVzY4CI1"],
     ]
