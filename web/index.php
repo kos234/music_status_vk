@@ -1,21 +1,6 @@
 <?php
 ini_set('max_execution_time', 900); // Чтобы наш скрипт выполнялся
 
-require '/app/vendor/autoload.php';
-
-$client = new GuzzleHttp\Client();
-$res = $client->get('https://api.spotify.com/v1/me/player/currently-playing?market=ES&additional_types=episode', [
-    'headers' => [
-        'Authorization' =>  ['Bearer ' . "BQAKmny4Ul7HS8I4TOueVYuHgSU8OUzCw9B_h2ZPs8STWaLLnvsYzjChPp8T0gfyD5bgeKK3Gzq1zhQYmzXrXIONZgv6_NgWDzgtG8yF7550NIqqsyLmWm5-aOwUs5vaXz4NGnrTNf5SRvQsHnhfrzhGbPWeBUOgrj7zWqjRp4Adbi-kqCXkFR5ReHbViozwRF711HlmDResIZXH9QeuQdMtzMgxfiOrfRUNexZiCA11e6_5hbTCxnfNwg5wOdPP3iD0G7A87kCZ485P2edimpVnQVzY4CI1"],
-    ]
-]);
-
-echo $res->getStatusCode(); // 200
-error_log("ss -> " . $res->getBody());
-error_log("ss -> " . $res->getProtocolVersion());
-error_log("ss -> " . $res->getReasonPhrase());
-error_log("ss -> " . print_r($res->getHeaders()));
-
 /*$urlDB=parse_url(getenv("CLEARDB_DATABASE_URL")); //Подключаемся к бд
 
 $tokenVk = "2816968ae753fdf5d35ed88fa6b396a219b0712f28e38d169cd0a04e8851c57eae6a29077cdfa8493a241";
