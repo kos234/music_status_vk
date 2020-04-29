@@ -60,7 +60,7 @@ ENGINE = InnoDB;"); //Создаем таблицу в бд
                 if($trackJSON->item->album->type == "album")
                     $album = " , Альбом: " . $trackJSON->item->album->name;
 
-            $status = "Слушает: " . substr($artists, -2) . " - " . $trackJSON->item->name . $album;
+            $status = "Слушает: " . $artists . " - " . $trackJSON->item->name . $album;
 
             error_log("Получилось -> ." .$status);
 
