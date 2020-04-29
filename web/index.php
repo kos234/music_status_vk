@@ -1,7 +1,7 @@
 <?php
 ini_set('max_execution_time', 900); // Чтобы наш скрипт выполнялся
 
-use GuzzleHttp\Client;
+require 'vendor/autoload.php';
 
 $client = new Client();
 $res = $client->post('https://api.spotify.com/v1/me', [
