@@ -52,8 +52,8 @@ ENGINE = InnoDB;"); //Создаем таблицу в бд
 
             while (isset($trackJSON->item->artists[$count]->name)){
                 error_log($trackJSON->item->artists[$count]->name);
-               //$artists = $artists + $trackJSON->item->artists[0]->name;
-               // $artists = $artists + ", ";
+               $artists = $artists + $trackJSON->item->artists[0]->name;
+               $artists = $artists + ", ";
                 $count ++;
             }
 
