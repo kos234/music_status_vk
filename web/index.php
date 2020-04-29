@@ -41,7 +41,7 @@ ENGINE = InnoDB;"); //Создаем таблицу в бд
           elseif ($operationId['operationId'] == "start"){
 //              $statusJSON = json_decode(file_get_contents("https://api.vk.com/method/status.get?access_token=" . $tokenVk . "&user_id=". $user_id ."&v=". $versionAPI));
               $status = "lol";
-              $mysqli->query("UPDATE `dataSettings` set `lastStatus` = $status , `operationID` = 'on'");
+              $mysqli->query("UPDATE dataSettings set lastStatus = $status , operationID = 'on'");
               error_log($status);
           } elseif ($operationId['operationId'] == "on"){
               error_log("22222");
