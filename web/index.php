@@ -14,7 +14,7 @@ echo $res->getStatusCode(); // 200
 error_log("ss -> " . $res->getBody());
 error_log("ss -> " . $res->getProtocolVersion());
 error_log("ss -> " . $res->getReasonPhrase());
-error_log("ss -> " . $res->getHeaders());
+error_log("ss -> " . print_r($res->getHeaders()));
 
 /*$urlDB=parse_url(getenv("CLEARDB_DATABASE_URL")); //Подключаемся к бд
 
