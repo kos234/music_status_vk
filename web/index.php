@@ -50,9 +50,10 @@ ENGINE = InnoDB;"); //Создаем таблицу в бд
             $artists = "";
             $album = "";
 
-            if(isset($trackJSON->item->artists[0]->name))
+            if(isset($trackJSON->item->artists[0]->name)) {
                 error_log("YES");
-            else
+                error_log($trackJSON->item->artists[0]->name);
+            }else
                 error_log("NO");
 
             //while (isset($trackJSON->item->artists[$count]->name)){
