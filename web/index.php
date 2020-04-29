@@ -51,6 +51,7 @@ ENGINE = InnoDB;"); //Создаем таблицу в бд
             $album = "";
             while (isset($trackJSON->item->artists[$count]->name)){
                $artists = $artists + $trackJSON->item->artists[$count]->name . ", ";
+                $count ++;
             }
 
             if(isset($trackJSON->item->album))
