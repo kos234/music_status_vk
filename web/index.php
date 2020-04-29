@@ -12,8 +12,6 @@ $res = $client->get('https://api.spotify.com/v1/me/player/currently-playing?mark
 
 echo $res->getStatusCode(); // 200
 error_log("ss -> " . $res->getBody());
-error_log("ss -> " . $res->getHeader());
-error_log("ss -> " . $res->getHeaderLine());
 error_log("ss -> " . $res->getProtocolVersion());
 error_log("ss -> " . $res->getReasonPhrase());
 error_log("ss -> " . $res->getHeaders());
