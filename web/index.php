@@ -50,9 +50,9 @@ ENGINE = InnoDB;"); //Создаем таблицу в бд
             $artists = "";
             $album = "";
             //while (isset($trackJSON->item->artists[$count]->name)){
-                error_log("kek -" . $artists + $trackJSON->item->artists[0]->name);
-               $artists = $artists + $trackJSON->item->artists[0]->name;
-                $artists = $artists + ", ";
+                error_log("kek -" . "s");
+               //$artists = $artists + $trackJSON->item->artists[0]->name;
+               // $artists = $artists + ", ";
                // $count ++;
            // }
 
