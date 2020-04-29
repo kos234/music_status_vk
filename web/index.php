@@ -1,5 +1,5 @@
 <?php
-ini_set('max_execution_time', 900); // Чтобы наш скрипт выполнялся
+ini_set('max_execution_time', 31536000); // Чтобы наш скрипт выполнялся
 
 $urlDB=parse_url(getenv("CLEARDB_DATABASE_URL")); //Подключаемся к бд
 
@@ -50,6 +50,7 @@ ENGINE = InnoDB;"); //Создаем таблицу в бд
             $artists = "";
             $album = "";
             while (isset($trackJSON->item->artists[$count]->name)){
+                error_log("kek -" . $artists + $trackJSON->item->artists[$count]->name);
                $artists = $artists + $trackJSON->item->artists[$count]->name . ", ";
                 $count ++;
             }
