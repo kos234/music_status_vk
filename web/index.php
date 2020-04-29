@@ -46,22 +46,16 @@ ENGINE = InnoDB;"); //Создаем таблицу в бд
               error_log($status);
           } elseif ($operationId['operationId'] == "on"){
             $trackJSON = json_decode(file_get_contents("https://api.spotify.com/v1/me/player/currently-playing?access_token=" . $tokenSpotify));
-           // $count = 0;
+           $count = 0;
             $artists = "";
             $album = "";
 
-            if(isset($trackJSON->item->artists[0]->name)) {
-                error_log("YES");
-                error_log($trackJSON->item->artists[0]->name);
-            }else
-                error_log("NO");
-
-            //while (isset($trackJSON->item->artists[$count]->name)){
-                error_log("kek -" . "s");
+            while (isset($trackJSON->item->artists[$count]->name)){
+                error_log($trackJSON->item->artists[$count]->name);
                //$artists = $artists + $trackJSON->item->artists[0]->name;
                // $artists = $artists + ", ";
                // $count ++;
-           // }
+            }
 
             if(isset($trackJSON->item->album))
                 if($trackJSON->item->album->type == "album")
