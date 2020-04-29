@@ -41,12 +41,19 @@ ENGINE = InnoDB;"); //Создаем таблицу в бд
           elseif ($operationId['operationId'] == "start"){
 //              $statusJSON = json_decode(file_get_contents("https://api.vk.com/method/status.get?access_token=" . $tokenVk . "&user_id=". $user_id ."&v=". $versionAPI));
               $status = "lol";
-              $mysqli->query("UPDATE dataSettings set lastStatus = ". $status . " , operationID = 'on'");
+              $error = $mysqli->query("UPDATE dataSettings set lastStatus = '". $status . "' , operationID = 'on'");
+              if($error) {
+                  error_log('Прокатило;');
+              } else {
+                  error_log('Хьюстон! У нас проблемы!'.mysqli_error($error));
+
+              }
               error_log($status);
           } elseif ($operationId['operationId'] == "on"){
               error_log("22222");
               break;
             break;
+
           }elseif ($operationId['operationId'] == "finish"){
 
           }else{
