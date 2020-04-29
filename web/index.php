@@ -26,33 +26,33 @@ $mysqli = new mysqli($server, $username, $password,$db); //Подключаем�
 	`operationId` VarChar( 255 ) NOT NULL DEFAULT 'off',
 	`lastStatus` VarChar( 255 ) NULL )
 ENGINE = InnoDB;"); //Создаем таблицу в бд
-
-      while (true){
-          $result_set = $mysqli->query("SELECT `operationId` FROM `dataSettings` ");
-
-          if ($result_set !== false) {
-              $operationId = $result_set->fetch_assoc();
-          } else { // обработка ошибки
-              echo "error: " . $mysqli->error;
-              break;
-          }
-
-          if($operationId['operationId'] == "off"){continue;}
-          elseif ($operationId['operationId'] == "start"){
-              $statusJSON = json_decode(file_get_contents("https://api.vk.com/method/status.get?access_token=" . $tokenVk . "&user_id=". $user_id ."&v=". $versionAPI));
-              $status = $statusJSON->response->text;
-              $mysqli->query("UPDATE `dataSettings` set `lastStatus` = $status , `operationID` = 'on'");
-              error_log($status);
-          }elseif ($operationId['operationId'] == "on"){
-              error_log("22222");
-              break;
-            break;
-          }elseif ($operationId['operationId'] == "finish"){
-
-          }else{
-              error_log($operationId['operationId'] . " type " . gettype($operationId['operationId']));
-          }
-      }
+      $mysqli->query("UPDATE `dataSettings` set `lastStatus` = 'kek' , `operationID` = 'on'");
+//      while (true){
+//          $result_set = $mysqli->query("SELECT `operationId` FROM `dataSettings` ");
+//
+//          if ($result_set !== false) {
+//              $operationId = $result_set->fetch_assoc();
+//          } else { // обработка ошибки
+//              echo "error: " . $mysqli->error;
+//              break;
+//          }
+//
+//          if($operationId['operationId'] == "off"){continue;}
+//          elseif ($operationId['operationId'] == "start"){
+//              $statusJSON = json_decode(file_get_contents("https://api.vk.com/method/status.get?access_token=" . $tokenVk . "&user_id=". $user_id ."&v=". $versionAPI));
+//              $status = $statusJSON->response->text;
+//              $mysqli->query("UPDATE `dataSettings` set `lastStatus` = $status , `operationID` = 'on'");
+//              error_log($status);
+//          }elseif ($operationId['operationId'] == "on"){
+//              error_log("22222");
+//              break;
+//            break;
+//          }elseif ($operationId['operationId'] == "finish"){
+//
+//          }else{
+//              error_log($operationId['operationId'] . " type " . gettype($operationId['operationId']));
+//          }
+//      }
       error_log("End");
   }
     ?>
