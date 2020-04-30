@@ -13,14 +13,14 @@ $username = $urlDB["user"];
 $password = $urlDB["pass"];
 $db = substr($urlDB["path"],1);
 
-//echo $server.' <- сервер '.$username.' <- имя пользователя '.$password.' <- пароль '.$db.' <- база данных'; //Если нужно узнать данные бд
+echo $server.' <- сервер '.$username.' <- имя пользователя '.$password.' <- пароль '.$db.' <- база данных'; //Если нужно узнать данные бд
 
 $mysqli = new mysqli($server, $username, $password,$db); //Подключаемся
 
   if ($mysqli->connect_error) {//проверка подключились ли мы
       die('Ошибка подключения (' . $mysqli->connect_errno . ') '. $mysqli->connect_error); //если нет выводим ошибку и выходим из кода
   } else {
-      $mysqli->query("SET NAMES 'utf8'");//Устанавливаем кодировку
+      /*$mysqli->query("SET NAMES 'utf8'");//Устанавливаем кодировку
 
       error_log("----------");
       $mysqli->query("CREATE TABLE IF NOT EXISTS `dataSettings` ( 
@@ -72,6 +72,6 @@ ENGINE = InnoDB;"); //Создаем таблицу в бд
               error_log($operationId['operationId'] . " type " . gettype($operationId['operationId']));
           }
       }
-      error_log("End");
+      error_log("End"); */
   }
     ?>
