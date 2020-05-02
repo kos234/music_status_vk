@@ -92,7 +92,7 @@ $mysqli = new mysqli($server, $username, $password,$db); //Подключаем�
                           curl_close($curl);
                       }
 
-                  error_log($request_params['message']);
+                  error_log('https://api.vk.com/method/messages.send?' . $request_params = http_build_query($request_params));
               }
               elseif (($text[0] == '/start') || ($text[0] == '/Start') || ($text[0] == '/начать') || ($text[0] == '/Начать')){
                   if(isset($text[1]) && isset($text[2]) && isset($text[3]) && isset($text[4]) && isset($text[5])){
