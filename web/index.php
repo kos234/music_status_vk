@@ -74,11 +74,8 @@ $mysqli = new mysqli($server, $username, $password,$db); //Подключаем�
                       /start|начать {Сервер базы данных} {Имя пользователя базы данных} {Пароль базы данных} {Имя базы данных} {Токен Spotify} - настройка первого запуска \n
                       /off|выключить - выключает статус \t 
                       /on|включить - включает статус \t
-                      /set operation|включить операцию {off, start, on, finish} - включает определенную операцию статуса \n";
-
-                  file_get_contents('https://api.vk.com/method/messages.send?' . http_build_query($request_params));
-
-                      $request_params['message'] = "Операции статуса: \t
+                      /set operation|включить операцию {off, start, on, finish} - включает определенную операцию статуса \n
+                      Операции статуса: \t
                       off - резкое выключить статус (то что вы слушали останется в статусе)\t
                       start - плавное включение (сохранение вашего текущего статуса и включение музыкального) \t
                       on - резкое включение статуса (не сохраняет ваш статус) \t
@@ -110,7 +107,7 @@ $mysqli = new mysqli($server, $username, $password,$db); //Подключаем�
                   }else $request_params['message'] = "Вы не привязаны к базе данных! Напишите /start|начать {Сервер базы данных} {Имя пользователя базы данных} {Пароль базы данных} {Имя базы данных} {Токен Spotify} для привязки!";
               }
 
-              file_get_contents('https://api.vk.com/method/messages.send?' . http_build_query($request_params));
+              echo sendPOST($request_params);
 
               exit('ok');
               die('ok');
@@ -123,14 +120,17 @@ $mysqli = new mysqli($server, $username, $password,$db); //Подключаем�
 
   }
 
-  function replaceSpace($string){
-      $text = explode(' ', $string);
-        $textReturn = "";
-      for ($i = 0; $i < count($text); $i ++){
-          $textReturn = $textReturn . $text[$i] . "%20";
-      }
-
-      return $textReturn.substr(0, -3);
+  function sendPOST($array){
+      $myCurl = curl_init();
+      curl_setopt_array($myCurl, array(
+          CURLOPT_URL => 'https://api.vk.com/method/messages.send',
+          CURLOPT_RETURNTRANSFER => true,
+          CURLOPT_POST => true,
+          CURLOPT_POSTFIELDS => http_build_query($array)
+      ));
+      $response = curl_exec($myCurl);
+      curl_close($myCurl);
+      return $response;
   }
 
   function createTab($mysqli){
