@@ -110,8 +110,7 @@ $mysqli = new mysqli($server, $username, $password,$db); //Подключаем�
 
               echo sendPOST($request_params);
 
-              exit('ok');
-              die('ok');
+              return 'ok';
               break;
       }
 
@@ -121,13 +120,13 @@ $mysqli = new mysqli($server, $username, $password,$db); //Подключаем�
 
   }
 
-  function sendPOST($array){
+  function sendPOST($request_params){
       $myCurl = curl_init();
       curl_setopt_array($myCurl, array(
           CURLOPT_URL => 'https://api.vk.com/method/messages.send',
           CURLOPT_RETURNTRANSFER => true,
           CURLOPT_POST => true,
-          CURLOPT_POSTFIELDS => http_build_query($array)
+          CURLOPT_POSTFIELDS => http_build_query($request_params)
       ));
       $response = curl_exec($myCurl);
       curl_close($myCurl);
