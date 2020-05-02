@@ -7,7 +7,7 @@ if(isset($_GET['code'])){
     if (isset($token->access_token)){
         echo "Ваш токен -> " . $token->access_token;
     }
-}elseif ($_GET['access_token']) {echo "Выаш токен -> " . $_GET['access_token'];}
+}elseif (isset($_GET['access_token'])) {echo "Выаш токен -> " . $_GET['access_token'];}
 else {
     if (!isset($_REQUEST)) //проверяем получили ли мы запрос
         return;
