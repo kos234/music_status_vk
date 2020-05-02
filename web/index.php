@@ -19,9 +19,7 @@ if(isset($_GET['code'])){
         $data = json_decode($result, true);
         error_log("-------------------------trure-------------------");
 
-        if (isset($data->access_token)){
-            echo "Ваш токен -> " . $data->access_token;
-        }
+        echo $data;
     } else {
         $data = false;
         error_log("-------------------------jfalse-------------------");
