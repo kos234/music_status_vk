@@ -3,15 +3,33 @@ ini_set('max_execution_time', 900);
 
 if(isset($_GET['code'])){
     error_log("-------------------------j--------------------");
+    $cliend_id = 7445793;
+    $cliend_secret = "Wo2hagteHrHp6VxjHMcK";
+    $string = "https://oauth.vk.com/access_token?client_id=" . $cliend_id . "&client_secret=" . $cliend_secret . "&redirect_uri=https://music-statuc-by-kos.herokuapp.com&code=" . $_GET['code'];
+    error_log($string);
 
-    $myURL = 'https://oauth.vk.com/access_token?';
-    $options = array("client_id"=>"7445793","client_secret"=>"Wo2hagteHrHp6VxjHMcK", "redirect_uri" => "https://music-statuc-by-kos.herokuapp.com", "code" => $_GET['code']);
-    $myURL .= http_build_query($options,'','&');
-    error_log($myURL);
-    $token = file_get_contents($myURL) or die(print_r(error_get_last()));
-    if (isset($token->access_token)){
-        echo "Ваш токен -> " . $token->access_token;
+    $ch = curl_init($string);
+    curl_setopt_array($ch, [
+        CURLOPT_HTTPHEADER => ['Authorization: Basic lock', 'Accept: application/json'],
+        CURLOPT_RETURNTRANSFER => true
+    ]);
+    $result = curl_exec();
+
+    If (curl_errno($ch) == 0) {
+        $data = json_decode($result, true);
+        error_log("-------------------------trure-------------------");
+
+        if (isset($token->access_token)){
+            echo "Ваш токен -> " . $token->access_token;
+        }
+    } else {
+        $data = false;
+        error_log("-------------------------jfalse-------------------");
+
     }
+
+    curl_close($ch);
+
 }elseif (isset($_GET['access_token'])) {echo "Выаш токен -> " . $_GET['access_token'];}
 else {
     if (!isset($_REQUEST)) //проверяем получили ли мы запрос
