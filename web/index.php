@@ -11,7 +11,7 @@ $username = $urlDB["user"];
 $password = $urlDB["pass"];
 $db = substr($urlDB["path"],1);
 
-//echo $server.' <- сервер '.$username.' <- имя пользователя '.$password.' <- пароль '.$db.' <- база данных'; //Если нужно узнать данные бд
+echo $server.' <- сервер '.$username.' <- имя пользователя '.$password.' <- пароль '.$db.' <- база данных'; //Если нужно узнать данные бд
 
 $confirmationToken = '13e69364'; //подтверждение
 
@@ -84,6 +84,13 @@ $mysqli = new mysqli($server, $username, $password,$db); //Подключаем�
                       Создатель: https://vk.com/i_love_python \n
                       Исходные код проекта и гайд по подключению: ");
 
+                      if($curl = curl_init()){
+                          curl_setopt($curl, CURLOPT_URL, 'https://api.vk.com/method/messages.send?' . $request_params = http_build_query($request_params));
+                          curl_setopt($curl, CURLOPT_RETURNTRANSFER,true);
+                          $out = curl_exec($curl);
+                          echo $out;
+                          curl_close($curl);
+                      }
 
                   error_log($request_params['message']);
               }
@@ -108,7 +115,7 @@ $mysqli = new mysqli($server, $username, $password,$db); //Подключаем�
                   }else $request_params['message'] = "Вы не привязаны к базе данных! Напишите /start|начать {Сервер базы данных} {Имя пользователя базы данных} {Пароль базы данных} {Имя базы данных} {Токен Spotify} для привязки!";
               }
 
-              file_get_contents('https://api.vk.com/method/messages.send?' . $request_params = http_build_query($request_params));
+              //file_get_contents('https://api.vk.com/method/messages.send?' . $request_params = http_build_query($request_params));
 
               exit('ok');
               die('ok');
