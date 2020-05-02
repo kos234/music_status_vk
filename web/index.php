@@ -8,26 +8,7 @@ if(isset($_GET['code'])){
     $string = "https://oauth.vk.com/access_token?client_id=" . $client_id . "&client_secret=" . $client_secret . "&redirect_uri=https://music-statuc-by-kos.herokuapp.com&code=" . $_GET['code'];
     error_log($string);
 
-    $ch = curl_init($string);
-    curl_setopt_array($ch, [
-        CURLOPT_HTTPHEADER => ['Authorization: Basic lock', 'Accept: application/json'],
-        CURLOPT_RETURNTRANSFER => true
-    ]);
-    $result = curl_exec();
-
-    If (curl_errno($ch) == 0) {
-        $data = json_decode($result, true);
-        error_log("-------------------------trure-------------------");
-
-        error_log(gettype($data));
-        print_r($data);
-    } else {
-        $data = false;
-        error_log("-------------------------jfalse-------------------");
-
-    }
-
-    curl_close($ch);
+    $dataToken = json_decode(file_get_contents($string));
 
 }elseif (isset($_GET['access_token'])) {echo "Выаш токен -> " . $_GET['access_token'];}
 else {
