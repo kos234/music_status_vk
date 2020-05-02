@@ -3,9 +3,9 @@ ini_set('max_execution_time', 900);
 
 if(isset($_GET['code'])){
     error_log("-------------------------j--------------------");
-    $cliend_id = 7445793;
-    $cliend_secret = "Wo2hagteHrHp6VxjHMcK";
-    $string = "https://oauth.vk.com/access_token?client_id=" . $cliend_id . "&client_secret=" . $cliend_secret . "&redirect_uri=https://music-statuc-by-kos.herokuapp.com&code=" . $_GET['code'];
+    $client_id = 7445793;
+    $client_secret = "Wo2hagteHrHp6VxjHMcK";
+    $string = "https://oauth.vk.com/access_token?client_id=" . $client_id . "&client_secret=" . $client_secret . "&redirect_uri=https://music-statuc-by-kos.herokuapp.com&code=" . $_GET['code'];
     error_log($string);
 
     $ch = curl_init($string);
@@ -19,8 +19,8 @@ if(isset($_GET['code'])){
         $data = json_decode($result, true);
         error_log("-------------------------trure-------------------");
 
-        if (isset($token->access_token)){
-            echo "Ваш токен -> " . $token->access_token;
+        if (isset($data->access_token)){
+            echo "Ваш токен -> " . $data->access_token;
         }
     } else {
         $data = false;
