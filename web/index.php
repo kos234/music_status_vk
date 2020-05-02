@@ -19,6 +19,7 @@ if(isset($_GET['code'])){
         $data = json_decode($result, true);
         error_log("-------------------------trure-------------------");
 
+        gettype($data);
         print_r($data);
     } else {
         $data = false;
