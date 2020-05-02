@@ -67,7 +67,7 @@ $mysqli = new mysqli($server, $username, $password,$db); //Подключаем�
 
               //Проверяем массив слов
               if(($text[0] == '/info') || ($text[0] == '/Info') || ($text[0] == '/инфо') || ($text[0] == '/Инфо')){
-                      $request_params['message'] = "Music status for Vk by kos v1.0.0 \n \n 
+                      $request_params['message'] = replaceSpace("Music status for Vk by kos v1.0.0 \n \n 
                       Команды: \n 
                       /Info|Инфо - информация о проекте \n 
                       /start|начать {Сервер базы данных} {Имя пользователя базы данных} {Пароль базы данных} {Имя базы данных} {Токен Spotify} - настройка первого запуска \n
@@ -82,9 +82,9 @@ $mysqli = new mysqli($server, $username, $password,$db); //Подключаем�
                       p.s. Команды: /off|выключить и /on|включить плавно включают и выключают статус \n \n
                       Информация о проекте: \n
                       Создатель: https://vk.com/i_love_python \n
-                      Исходные код проекта и гайд по подключению: ";
+                      Исходные код проекта и гайд по подключению: ");
 
-
+                error_log($request_params['message']);
               }
               elseif (($text[0] == '/start') || ($text[0] == '/Start') || ($text[0] == '/начать') || ($text[0] == '/Начать')){
                   if(isset($text[1]) && isset($text[2]) && isset($text[3]) && isset($text[4]) && isset($text[5])){
@@ -118,6 +118,16 @@ $mysqli = new mysqli($server, $username, $password,$db); //Подключаем�
 
       $mysqli->close();
 
+  }
+
+  function replaceSpace($string){
+      $text = explode(' ', $string);
+        $textReturn = "";
+      for ($i = 0; $i < count($text); $i ++){
+          $textReturn = $textReturn . $text[$i] . "%20";
+      }
+
+      return $textReturn.substr(0, -3);
   }
 
   function createTab($mysqli){
