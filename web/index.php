@@ -11,7 +11,7 @@ $username = $urlDB["user"];
 $password = $urlDB["pass"];
 $db = substr($urlDB["path"],1);
 
-echo $server.' <- сервер '.$username.' <- имя пользователя '.$password.' <- пароль '.$db.' <- база данных'; //Если нужно узнать данные бд
+//echo $server.' <- сервер '.$username.' <- имя пользователя '.$password.' <- пароль '.$db.' <- база данных'; //Если нужно узнать данные бд
 
 $confirmationToken = '13e69364'; //подтверждение
 
