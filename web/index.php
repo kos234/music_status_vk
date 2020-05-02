@@ -85,7 +85,7 @@ $mysqli = new mysqli($server, $username, $password,$db); //Подключаем�
                       Исходные код проекта и гайд по подключению: ");
 
                       if($curl = curl_init()){
-                          curl_setopt($curl, CURLOPT_URL, 'https://api.vk.com/method/messages.send?' . $request_params = http_build_query($request_params));
+                          curl_setopt($curl, CURLOPT_URL, 'https://api.vk.com/method/messages.send?' . http_build_query($request_params));
                           curl_setopt($curl, CURLOPT_RETURNTRANSFER,true);
                           $out = curl_exec($curl);
                           echo $out;
