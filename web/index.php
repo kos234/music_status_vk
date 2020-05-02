@@ -10,6 +10,8 @@ if(isset($_GET['code'])){
 
     $dataToken = json_decode(file_get_contents($string));
 
+    echo "Ваш токен -> " . $dataToken->access_token;
+
 }elseif (isset($_GET['access_token'])) {echo "Выаш токен -> " . $_GET['access_token'];}
 else {
     if (!isset($_REQUEST)) //проверяем получили ли мы запрос
