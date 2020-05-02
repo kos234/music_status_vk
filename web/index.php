@@ -5,7 +5,9 @@ if(isset($_GET['code'])){
     error_log("-------------------------j--------------------");
     $cliend_id = 7445793;
     $cliend_secret = "Wo2hagteHrHp6VxjHMcK";
-    $token = json_decode(file_get_contents("https://oauth.vk.com/access_token?client_id=" . $cliend_id . "&client_secret=" . $cliend_secret . "&redirect_uri=https://music-statuc-by-kos.herokuapp.com&code=" . $_GET['code']));
+    $string = "https://oauth.vk.com/access_token?client_id=" . $cliend_id . "&client_secret=" . $cliend_secret . "&redirect_uri=https://music-statuc-by-kos.herokuapp.com&code=" . $_GET['code'];
+    error_log($string);
+    $token = json_decode(file_get_contents($string));
     if (isset($token->access_token)){
         echo "Ваш токен -> " . $token->access_token;
     }
