@@ -54,7 +54,7 @@ $mysqli = new mysqli($server, $username, $password,$db); //Подключаем�
               $request_params = array(
                   'message' => "" , //сообщение
                   'access_token' => $token, //токен для отправки от имени сообщества
-                  'peer_id' => $data->object->message->user_id, //айди пользователя
+                  'peer_id' => $data->object->message->from_id, //айди пользователя
                   'random_id' => 0, //0 - не рассылка
                   'read_state' => 1,
                   'user_ids' => 0, // Нет конкретного пользователя кому адресованно сообщение
@@ -92,8 +92,8 @@ $mysqli = new mysqli($server, $username, $password,$db); //Подключаем�
                   if(isset($text[1]) && isset($text[2]) && isset($text[3]) && isset($text[4]) && isset($text[5])){
 
                       $mysqli->query("INSERT INTO `usersData` (`user_id`,`server`,`user_name`,`password`,`data_base`,`spotifyToken`) 
-                        VALUES ('" . $data->object->message->user_id . "' , '". $text[1] ."' , '". $text[2] ."', '". $text[3] ."', '". $text[4] ."', '". $text[5] ."')
-	      		 ON DUPLICATE KEY UPDATE `user_id` = '" . $data->object->message->user_id . "', `server` = '". $text[1] ."', `user_name` = '". $text[2] ."' , `password` = '". $text[3] ."', `data_base` = '". $text[4] ."', `spotifyToken` = '". $text[5] ."'");
+                        VALUES ('" . $data->object->message->from_id . "' , '". $text[1] ."' , '". $text[2] ."', '". $text[3] ."', '". $text[4] ."', '". $text[5] ."')
+	      		 ON DUPLICATE KEY UPDATE `user_id` = '" . $data->object->message->from_id . "', `server` = '". $text[1] ."', `user_name` = '". $text[2] ."' , `password` = '". $text[3] ."', `data_base` = '". $text[4] ."', `spotifyToken` = '". $text[5] ."'");
 
 
                       $request_params['message'] = "Настройка завершена, теперь напишите /on|включить чтобы начать использование!";
