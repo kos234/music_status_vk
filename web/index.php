@@ -1,77 +1,135 @@
 <?php
-ini_set('max_execution_time', 31536000); // Чтобы наш скрипт выполнялся
+ini_set('max_execution_time', 900);
+
+if (!isset($_REQUEST)) //проверяем получили ли мы запрос
+    return;
 
 $urlDB=parse_url(getenv("CLEARDB_DATABASE_URL")); //Подключаемся к бд
-
-$tokenVk = "2816968ae753fdf5d35ed88fa6b396a219b0712f28e38d169cd0a04e8851c57eae6a29077cdfa8493a241";
-$tokenSpotify = "BQC8i9bw5KEMa4xzhuF36sCIMLs4eaa6qWBu1BFDxmccEaQfuWRqzx4j26nJjNBwcnLCz8nF9_CwLYAIgnSs8I5Pk7Q8XTNfsI1kUdWaCr_tgUkq8eHPOuum1aN_jTpeDhqjKxTMr9yaLufWFDvyqPFIhPGDT0np7q3xV8R8YViJnVSznf6qiT-EzCjSU3iRnHDy9r3nCIByMW-zJ1dhtv2Brf4m1Nia5v2RoJu-AycECQv8A0RAygdTCAZKU18fag9BMinz9IvKR99jEJJsOKrOu2jS1L3yH3qm6PHaE3E";
-$versionAPI = "5.103";
-$user_id = "388061716";
 
 $server = $urlDB["host"];
 $username = $urlDB["user"];
 $password = $urlDB["pass"];
 $db = substr($urlDB["path"],1);
 
-echo $server.' <- сервер '.$username.' <- имя пользователя '.$password.' <- пароль '.$db.' <- база данных'; //Если нужно узнать данные бд
+//echo $server.' <- сервер '.$username.' <- имя пользователя '.$password.' <- пароль '.$db.' <- база данных'; //Если нужно узнать данные бд
+
+$confirmationToken = '13e69364'; //подтверждение
+
+//Ключ доступа сообщества
+$token = 'a9e54cee09680fb710f00732e55c39766e051a9f1dd90d81fccceb582ec6cb730ea27d8a4301cc9f170cf';
+
+//Secret key
+$secretKey = 'koc_234432_cok';
+//Версия апи
+$v = 5.103;
 
 $mysqli = new mysqli($server, $username, $password,$db); //Подключаемся
 
   if ($mysqli->connect_error) {//проверка подключились ли мы
       die('Ошибка подключения (' . $mysqli->connect_errno . ') '. $mysqli->connect_error); //если нет выводим ошибку и выходим из кода
   } else {
-      /*$mysqli->query("SET NAMES 'utf8'");//Устанавливаем кодировку
+      $mysqli->query("SET NAMES 'utf8'");//Устанавливаем кодировку
 
-      error_log("----------");
-      $mysqli->query("CREATE TABLE IF NOT EXISTS `dataSettings` ( 
-	`operationId` VarChar( 255 ) NOT NULL DEFAULT 'off',
-	`lastStatus` VarChar( 255 ) NULL )
-ENGINE = InnoDB;"); //Создаем таблицу в бд
+      $data = json_decode(file_get_contents('php://input'));
 
-      while (true){
-          $result_set = $mysqli->query("SELECT `operationId` FROM `dataSettings` ");
+      //Проверяем secretKey
+      if(strcmp($data->secret, $secretKey) !== 0 && strcmp($data->type, 'confirmation') !== 0)
+          return;//Если не наш, выдаем ошибку серверу vk
 
-          if ($result_set !== false) {
-              $operationId = $result_set->fetch_assoc();
-          } else { // обработка ошибки
-              echo "error: " . $mysqli->error;
+      //Проверка события запроса
+      switch ($data->type) {
+
+          //Подтверждения адреса сервера
+          case 'confirmation':
+              //Отправляем код
+              echo $confirmationToken;
+              //Создаем таблицу
+              CreateTab($mysqli);
               break;
-          }
 
-          if($operationId['operationId'] == "off"){continue;}
-          elseif ($operationId['operationId'] == "start"){
-              $statusJSON = json_decode(file_get_contents("https://api.vk.com/method/status.get?access_token=" . $tokenVk . "&user_id=". $user_id ."&v=". $versionAPI));
-              $status = $statusJSON->response->text;
-              $mysqli->query("UPDATE dataSettings set lastStatus =  '$status' , operationID = 'on'");
-              error_log($status);
-          } elseif ($operationId['operationId'] == "on"){
-            $trackJSON = json_decode(file_get_contents("https://api.spotify.com/v1/me/player/currently-playing?access_token=" . $tokenSpotify));
-           $count = 0;
-            $artists = "";
-            $album = "";
+          //Новое сообщение
+          case 'message_new':
 
-            while (isset($trackJSON->item->artists[$count]->name)){
-                error_log($trackJSON->item->artists[$count]->name);
-               $artists = $artists . $trackJSON->item->artists[$count]->name . ", ";
-                $count ++;
-            }
+              //создаем  массив с сообщением
+              $request_params = array(
+                  'message' => "" , //сообщение
+                  'access_token' => $token, //токен для отправки от имени сообщества
+                  'peer_id' => $data->object->message->user_id, //айди пользователя
+                  'random_id' => 0, //0 - не рассылка
+                  'read_state' => 1,
+                  'user_ids' => 0, // Нет конкретного пользователя кому адресованно сообщение
+                  'v' => $v, //Версия API Vk
+                  'attachment' => '' //Вложение
+              );
 
-            if(isset($trackJSON->item->album))
-                if($trackJSON->item->album->type == "album")
-                    $album = " , Альбом: " . $trackJSON->item->album->name;
+              //Получаем текст сообщения и разбиваем его на массив слов
+              $text = explode(' ', $data->object->message->text);
 
-            $status = "Слушает: " . substr($artists, 0, -2) . " - " . $trackJSON->item->name . $album;
+              //Проверяем массив слов
+              if(($text[0] == '/info') || ($text[0] == '/Info') || ($text[0] == '/инфо') || ($text[0] == '/Инфо')){
+                      $request_params['message'] = "Music status for Vk by kos v1.0.0 \n \n 
+                      Команды: \n 
+                      /Info|Инфо - информация о проекте \n 
+                      /start|начать {Сервер базы данных} {Имя пользователя базы данных} {Пароль базы данных} {Имя базы данных} {Токен Spotify} - настройка первого запуска \n
+                      /off|выключить - выключает статус \n 
+                      /on|включить - включает статус \n
+                      /set operation|включить операцию {off, start, on, finish} - включает определенную операцию статуса \n \n
+                      Операции статуса: \n
+                      off - резкое выключить статус (то что вы слушали останется в статусе)\n
+                      start - плавное включение (сохранение вашего текущего статуса и включение музыкального) \n
+                      on - резкое включение статуса (не сохраняет ваш статус) \n
+                      finish - плавное выключение статуса (возвращает ваш прежний статус) \n
+                      p.s. Команды: /off|выключить и /on|включить плавно включают и выключают статус \n \n
+                      Информация о проекте: \n
+                      Создатель: https://vk.com/i_love_python \n
+                      Исходные код проекта и гайд по подключению: ";
 
-            error_log("Получилось -> ." .$status);
 
-            sleep(60);
+              }
+              elseif (($text[0] == '/start') || ($text[0] == '/Start') || ($text[0] == '/начать') || ($text[0] == '/Начать')){
+                  if(isset($text[1]) && isset($text[2]) && isset($text[3]) && isset($text[4]) && isset($text[5])){
 
-          }elseif ($operationId['operationId'] == "finish"){
+                      $mysqli->query("INSERT INTO `usersData` (`user_id`,`server`,`user_name`,`password`,`data_base`,`spotifyToken`) 
+                        VALUES ('" . $data->object->message->user_id . "' , '". $text[1] ."' , '". $text[2] ."', '". $text[3] ."', '". $text[4] ."', '". $text[5] ."')
+	      		 ON DUPLICATE KEY UPDATE `user_id` = '" . $data->object->message->user_id . "', `server` = '". $text[1] ."', `user_name` = '". $text[2] ."' , `password` = '". $text[3] ."', `data_base` = '". $text[4] ."', `spotifyToken` = '". $text[5] ."'");
 
-          }else{
-              error_log($operationId['operationId'] . " type " . gettype($operationId['operationId']));
-          }
+
+                      $request_params['message'] = "Настройка завершена, теперь напишите /on|включить чтобы начать использование!";
+                  }
+                  else $request_params['message'] = "Вы указали не все параметры!";
+
+              }elseif(($text[0] == '/on' || $text[0] == '/On') || ($text[0] == '/включить' || $text[0] == '/Включить')){
+                  $res = $mysqli->query("SELECT * FROM `usersData` WHERE `user_id` = '1'");
+                  if($res){
+
+
+                      $request_params['message'] = "Включенно!";
+                  }else $request_params['message'] = "Вы не привязаны к базе данных! Напишите /start|начать {Сервер базы данных} {Имя пользователя базы данных} {Пароль базы данных} {Имя базы данных} {Токен Spotify} для привязки!";
+              }
+
+              file_get_contents('https://api.vk.com/method/messages.send?' . $request_params = http_build_query($request_params));
+
+              exit('ok');
+              die('ok');
+              break;
       }
-      error_log("End"); */
+
+
+
+      $mysqli->close();
+
   }
+
+  function createTab($mysqli){
+      $mysqli->query("CREATE TABLE IF NOT EXISTS `usersData` ( 
+	`user_id` Int( 255 ) NOT NULL,
+	`server` VarChar( 255 ) NOT NULL,
+	`user_name` VarChar( 255 ) NOT NULL,
+	`password` VarChar( 255 ) NOT NULL,
+	`data_base` VarChar( 255 ) NOT NULL,
+	`spotifyToken` VarChar( 400 ) NOT NULL,
+	CONSTRAINT `unique_user_id` UNIQUE( `user_id` ) )
+ENGINE = InnoDB;");//Создаем таблицу в бд
+  }
+
     ?>
