@@ -89,23 +89,83 @@ $mysqli = new mysqli($server, $username, $password,$db); //Подключаем�
               elseif (($text[0] == '/start') || ($text[0] == '/Start') || ($text[0] == '/начать') || ($text[0] == '/Начать')){
                   if(isset($text[1]) && isset($text[2]) && isset($text[3]) && isset($text[4]) && isset($text[5])){
 
+                      $mysqliMusicStatus = new mysqli($text[2], $text[3], $text[4],$text[5]);
+
+                      if($mysqliMusicStatus){
+
+                      $mysqliMusicStatus->query("SET NAMES 'utf8'");
+                      $mysqliMusicStatus->query("INSERT INTO `datasettings` (`lastStatus`, `operationId`, `tokenSpotify`) VALUES ('', 'off', '". $text[5] ."')");
+
                       $mysqli->query("INSERT INTO `usersData` (`user_id`,`server`,`user_name`,`password`,`data_base`,`spotifyToken`) 
                         VALUES ('" . $data->object->message->from_id . "' , '". $text[1] ."' , '". $text[2] ."', '". $text[3] ."', '". $text[4] ."', '". $text[5] ."')
 	      		 ON DUPLICATE KEY UPDATE `user_id` = '" . $data->object->message->from_id . "', `server` = '". $text[1] ."', `user_name` = '". $text[2] ."' , `password` = '". $text[3] ."', `data_base` = '". $text[4] ."', `spotifyToken` = '". $text[5] ."'");
 
-
                       $request_params['message'] = "Настройка завершена, теперь напишите /on|включить чтобы начать использование!";
+                      }else
+                          $request_params['message'] = "Неверные данные!";
                   }
                   else $request_params['message'] = "Вы указали не все параметры!";
 
               }elseif(($text[0] == '/on' || $text[0] == '/On') || ($text[0] == '/включить' || $text[0] == '/Включить')){
-                  $res = $mysqli->query("SELECT * FROM `usersData` WHERE `user_id` = '1'");
+                  $res = $mysqli->query("SELECT * FROM `usersData` WHERE `user_id` = '". $data->object->message->from_id ."'");
                   $result = $res->fetch_assoc();
                   if(isset($result['user_id'])){
-
+                      $mysqliMusicStatus = new mysqli($result['server'], $result['user_name'], $result['password'],$result['data_base']);
+                      $mysqliMusicStatus->query("SET NAMES 'utf8'");
+                      $mysqliMusicStatus->query("UPDATE `datasettings` SET `operationId`= 'start'");
 
                       $request_params['message'] = "Включенно!";
                   }else $request_params['message'] = "Вы не привязаны к базе данных! Напишите /start|начать {Сервер базы данных} {Имя пользователя базы данных} {Пароль базы данных} {Имя базы данных} {Токен Spotify} для привязки!";
+              }elseif(($text[0] == '/off' || $text[0] == '/Off') || ($text[0] == '/выключить' || $text[0] == '/Выключить')){
+                  $res = $mysqli->query("SELECT * FROM `usersData` WHERE `user_id` = '". $data->object->message->from_id ."'");
+                  $result = $res->fetch_assoc();
+                  if(isset($result['user_id'])){
+                      $mysqliMusicStatus = new mysqli($result['server'], $result['user_name'], $result['password'],$result['data_base']);
+                      $mysqliMusicStatus->query("SET NAMES 'utf8'");
+                      $mysqliMusicStatus->query("UPDATE `datasettings` SET `operationId`= 'finish'");
+
+                      $request_params['message'] = "Выключенно!";
+                  }else $request_params['message'] = "Вы не привязаны к базе данных! Напишите /start|начать {Сервер базы данных} {Имя пользователя базы данных} {Пароль базы данных} {Имя базы данных} {Токен Spotify} для привязки!";
+              }elseif((($text[0] == '/Set' || $text[0] == '/set') || ($text[0] == '/включить' || $text[0] == '/Включить')) && (($text[1] == 'operation' || $text[1] == 'операцию'))){
+                  if(isset($text[1])) {
+                      $error = false;
+                      $type = "";
+                      switch ($text[1]){
+                          case "off":
+                              $type = "off";
+                              break;
+
+                          case "start":
+                              $type = "start";
+                              break;
+
+                          case "on":
+                              $type = "on"; // Не гавно код, а проверка на то ввел ли пользователь правильные операции
+                              break;
+
+                          case "finish":
+                              $type = "finish";
+                              break;
+
+                          default:
+                              $error = true;
+                              break;
+                      }
+
+                      if ($error){
+
+                      $res = $mysqli->query("SELECT * FROM `usersData` WHERE `user_id` = '" . $data->object->message->from_id . "'");
+                      $result = $res->fetch_assoc();
+                      if (isset($result['user_id'])) {
+                          $mysqliMusicStatus = new mysqli($result['server'], $result['user_name'], $result['password'], $result['data_base']);
+                          $mysqliMusicStatus->query("SET NAMES 'utf8'");
+                          $mysqliMusicStatus->query("UPDATE `datasettings` SET `operationId`= '" . $type ."'");
+
+                          $request_params['message'] = "Включенно!";
+
+                      }else $request_params['message'] = "Не верное название операции!";
+                      } else $request_params['message'] = "Вы не привязаны к базе данных! Напишите /start|начать {Сервер базы данных} {Имя пользователя базы данных} {Пароль базы данных} {Имя базы данных} {Токен Spotify} для привязки!";
+                  }else $request_params['message'] = "Вы не указали операцию!";
               }
 
               echo sendPOST($request_params);
@@ -126,8 +186,7 @@ $mysqli = new mysqli($server, $username, $password,$db); //Подключаем�
           CURLOPT_URL => 'https://api.vk.com/method/messages.send',
           CURLOPT_RETURNTRANSFER => true,
           CURLOPT_POST => true,
-          CURLOPT_POSTFIELDS => http_build_query($request_params),
-          CURLOPT_LOGIN_OPTIONS => "ok",
+          CURLOPT_POSTFIELDS => http_build_query($request_params)
 
       ));
       $response = curl_exec($myCurl);
