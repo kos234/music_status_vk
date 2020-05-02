@@ -74,8 +74,11 @@ $mysqli = new mysqli($server, $username, $password,$db); //Подключаем�
                       /start|начать {Сервер базы данных} {Имя пользователя базы данных} {Пароль базы данных} {Имя базы данных} {Токен Spotify} - настройка первого запуска \n
                       /off|выключить - выключает статус \n 
                       /on|включить - включает статус \n
-                      /set operation|включить операцию {off, start, on, finish} - включает определенную операцию статуса \n \n
-                      Операции статуса: \n
+                      /set operation|включить операцию {off, start, on, finish} - включает определенную операцию статуса";
+
+                  file_get_contents('https://api.vk.com/method/messages.send?' . $request_params = http_build_query($request_params));
+
+                      $request_params['message'] = "Операции статуса: \n
                       off - резкое выключить статус (то что вы слушали останется в статусе)\n
                       start - плавное включение (сохранение вашего текущего статуса и включение музыкального) \n
                       on - резкое включение статуса (не сохраняет ваш статус) \n
@@ -84,8 +87,6 @@ $mysqli = new mysqli($server, $username, $password,$db); //Подключаем�
                       Информация о проекте: \n
                       Создатель: https://vk.com/i_love_python \n
                       Исходные код проекта и гайд по подключению: ");
-
-                  echo connect($request_params);
 
                   error_log('https://api.vk.com/method/messages.send?' . http_build_query($request_params));
               }
@@ -110,7 +111,7 @@ $mysqli = new mysqli($server, $username, $password,$db); //Подключаем�
                   }else $request_params['message'] = "Вы не привязаны к базе данных! Напишите /start|начать {Сервер базы данных} {Имя пользователя базы данных} {Пароль базы данных} {Имя базы данных} {Токен Spotify} для привязки!";
               }
 
-              //file_get_contents('https://api.vk.com/method/messages.send?' . $request_params = http_build_query($request_params));
+              file_get_contents('https://api.vk.com/method/messages.send?' . $request_params = http_build_query($request_params));
 
               exit('ok');
               die('ok');
@@ -132,26 +133,6 @@ $mysqli = new mysqli($server, $username, $password,$db); //Подключаем�
 
       return $textReturn.substr(0, -3);
   }
-
-function connect($string){
-    $ch = curl_init();
-    $headers = array(
-        'Accept: application/json',
-        'Content-Type: application/json',
-
-    );
-    curl_setopt($ch, CURLOPT_URL, "https://api.vk.com/method/messages.send");
-    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-    curl_setopt($ch, CURLOPT_HEADER, 0);
-    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
-    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($string));
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-
-    // Timeout in seconds
-    curl_setopt($ch, CURLOPT_TIMEOUT, 30);
-
-    return curl_exec($ch);
-}
 
   function createTab($mysqli){
       $mysqli->query("CREATE TABLE IF NOT EXISTS `usersData` ( 
