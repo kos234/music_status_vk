@@ -248,5 +248,5 @@ $app->run();
 	CONSTRAINT `unique_user_id` UNIQUE( `user_id` ) )
 ENGINE = InnoDB;");//Создаем таблицу в бд
     }
-}
+
     ?> */
