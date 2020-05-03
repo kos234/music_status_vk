@@ -38,24 +38,14 @@ $app->get('/callback/vk', function () use ($app) {
 
 $app->get('/callback/spotify', function () use ($app) {
 if(isset($_GET['code'])) {
-    $curl_h = curl_init('https://accounts.spotify.com/api/token');
 
-    curl_setopt($curl_h, CURLOPT_HTTPHEADER,
-        array(
-            "Authorization: Basic " . AUTHORISATION_BASE_64_SPOTIFY,
-        )
-    );
-    curl_setopt($curl_h, CURLOPT_POST, 1);
-    curl_setopt($curl_h, CURLOPT_POSTFIELDS, array('grant_type' => 'code',
-        'code' => $_GET['code'],
-        'redirect_uri' => REDIRECT_URI_SPOTIFY));
-    curl_setopt($curl_h, CURLOPT_RETURNTRANSFER, true);
+    $output = shell_exec("curl -H \"Authorization: Basic ". AUTHORISATION_BASE_64_SPOTIFY . "\"
+     -d grant_type=authorization_code 
+     -d code=". $_GET['code'] ."
+     -d redirect_uri=". REDIRECT_URI_SPOTIFY . " https://accounts.spotify.com/api/token --ssl-no-revoke");
+    echo "<pre>$output</pre>";
 
-    $response = json_decode(curl_exec($curl_h), true);
-    error_log(print_r($response));
-    curl_close($curl_h);
-
-    echo "Ваш токен => " . $response->access_token . "\n Ваш токен для смены => " . $response->refresh_token;
+    //echo "Ваш токен => " . $response->access_token . "\n Ваш токен для смены => " . $response->refresh_token;
 }
     return "";
 });
