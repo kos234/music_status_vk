@@ -26,9 +26,11 @@ $app->get('/', function () use ($app) {
 
 $app->get('/callback/vk', function () use ($app) {
     if(isset($_GET['code'])) {
-        $string = "https://oauth.vk.com/access_token?client_id=" . CLIENT_ID_VK_APP . "&client_secret=" . client_secret . "&redirect_uri=". REDIRECT_URI_VK_APP . "&code=" . $_GET['code'];
-        error_log($string);
-        $dataToken = json_decode(file_get_contents($string));
+        $url = "https://oauth.vk.com/access_token?";
+        $dataToken = json_decode(file_get_contents($url . http_build_query(array("client_id" => CLIENT_ID_VK_APP,
+               "client_secret" => CLIENT_SECRET_VK_APP,
+                "redirect_uri" => REDIRECT_URI_VK_APP,
+                "code" => $_GET['code']))));
         echo "Ваш токен -> " . $dataToken->access_token;
     }
 });
