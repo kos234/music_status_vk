@@ -51,7 +51,7 @@ if(isset($_GET['code'])) {
         'redirect_uri' => REDIRECT_URI_SPOTIFY));
     curl_setopt($curl_h, CURLOPT_RETURNTRANSFER, true);
 
-    $response = curl_exec($curl_h);
+    $response = json_decode(curl_exec($curl_h));
 
     curl_close($curl_h);
 
