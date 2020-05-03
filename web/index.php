@@ -31,14 +31,14 @@ $app->get('/callback/vk', function () use ($app) {
                "client_secret" => CLIENT_SECRET_VK_APP,
                 "redirect_uri" => REDIRECT_URI_VK_APP,
                 "code" => $_GET['code']))));
-        echo "Ваш токен -> " . $dataToken->access_token;
+        echo "Ваш токен => " . $dataToken->access_token;
     }
     return "";
 });
 
 $app->get('/callback/spotify', function () use ($app) {
-
-    $curl_h = curl_init('http://www.example.com/');
+if(isset($_GET['code'])) {
+    $curl_h = curl_init('https://accounts.spotify.com/api/token');
 
     curl_setopt($curl_h, CURLOPT_HTTPHEADER,
         array(
@@ -46,12 +46,18 @@ $app->get('/callback/spotify', function () use ($app) {
         )
     );
     curl_setopt($curl_h, CURLOPT_POST, 1);
-    curl_setopt($curl_h, CURLOPT_POSTFIELDS, array('key' => '123213'));
+    curl_setopt($curl_h, CURLOPT_POSTFIELDS, array('grant_type' => 'code',
+        'code' => $_GET['code'],
+        'redirect_uri' => REDIRECT_URI_SPOTIFY));
     curl_setopt($curl_h, CURLOPT_RETURNTRANSFER, true);
 
     $response = curl_exec($curl_h);
 
-    return "spotify";
+    curl_close($curl_h);
+
+    echo "Ваш токен => " . $response->access_token . "\n Ваш токен для смены => " . $response->refresh_token;
+}
+    return "";
 });
 
 $app->post('/bot', function () use ($app) {
