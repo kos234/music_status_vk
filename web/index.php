@@ -1,19 +1,29 @@
 <?php
 ini_set('max_execution_time', 900);
+require('../vendor/autoload.php');
 
-if(isset($_GET['code'])){
-    error_log("-------------------------j--------------------");
-    $client_id = 7445793;
-    $client_secret = "Wo2hagteHrHp6VxjHMcK";
-    $string = "https://oauth.vk.com/access_token?client_id=" . $client_id . "&client_secret=" . $client_secret . "&redirect_uri=https://music-statuc-by-kos.herokuapp.com&code=" . $_GET['code'];
-    error_log($string);
+$app = new Silex\Application();
+$app['debug'] = true;
 
-    $dataToken = json_decode(file_get_contents($string));
+// Register the monolog logging service
+$app->register(new Silex\Provider\MonologServiceProvider(), array(
+    'monolog.logfile' => 'php://stderr',
+));
 
-    echo "Ваш токен -> " . $dataToken->access_token;
+$app->get('/', function () use ($app) {
+    return "";
+});
 
-}elseif (isset($_GET['access_token'])) {echo "Выаш токен -> " . $_GET['access_token'];}
-else {
+$app->get('/callback/vk', function () use ($app) {
+    return "vk";
+});
+
+$app->get('/callback/spotify', function () use ($app) {
+    return "spotify";
+});
+
+$app->post('/bot', function () use ($app) {
+
     if (!isset($_REQUEST)) //проверяем получили ли мы запрос
         return;
 
@@ -190,6 +200,27 @@ else {
 
     }
 
+    return "error";
+});
+
+
+$app->run();
+
+//if(isset($_GET['code'])){
+//    error_log("-------------------------j--------------------");
+//    $client_id = 7445793;
+//    $client_secret = "Wo2hagteHrHp6VxjHMcK";
+//    $string = "https://oauth.vk.com/access_token?client_id=" . $client_id . "&client_secret=" . $client_secret . "&redirect_uri=https://music-statuc-by-kos.herokuapp.com&code=" . $_GET['code'];
+//    error_log($string);
+//
+//    $dataToken = json_decode(file_get_contents($string));
+//
+//    echo "Ваш токен -> " . $dataToken->access_token;
+//
+//}elseif (isset($_GET['access_token'])) {echo "Выаш токен -> " . $_GET['access_token'];}
+//else {
+
+
     function sendPOST($request_params)
     {
         $myCurl = curl_init();
@@ -218,4 +249,4 @@ else {
 ENGINE = InnoDB;");//Создаем таблицу в бд
     }
 }
-    ?>
+    ?> */
