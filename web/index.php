@@ -2,6 +2,16 @@
 ini_set('max_execution_time', 900);
 require('../vendor/autoload.php');
 
+define(CLIENT_ID_VK_APP, 7445793); //Айди приложения
+define(CLIENT_SECRET_VK_APP, "Wo2hagteHrHp6VxjHMcK"); //Клиентский зашифрованный ключ приложения
+define(REDIRECT_URI_VK_APP, "https://music-statuc-by-kos.herokuapp.com/callback/vk"); //callback ссылка для приложения
+define(CONFIRMATION_TOKEN_VK_BOT, "13e69364"); //подтверждение
+define(TOKEN_VK_BOT, "a9e54cee09680fb710f00732e55c39766e051a9f1dd90d81fccceb582ec6cb730ea27d8a4301cc9f170cf"); //Ключ доступа сообщества
+define(SECRET_KEY_VK_BOT, "koc_234432_cok"); //Secret key
+define(VERSION_API_VK, 5.103); //Версия апи
+define(AUTHORISATION_BASE_64_SPOTIFY, "Basic ZGRlNmEyOTdjZGMzNDUwNTllZGE5OGM2OWJhNzIyYzA6Y2U0NWU5Y2JjN2RhNDcwMTliNjU0MGY5YWJlMDBhNjg="); //Авторизация спотифай
+define(REDIRECT_URI_SPOTIFY, "https://music-statuc-by-kos.herokuapp.com/callback/spotify"); //callback ссылка для спотифая
+
 $app = new Silex\Application();
 $app['debug'] = true;
 
@@ -15,10 +25,29 @@ $app->get('/', function () use ($app) {
 });
 
 $app->get('/callback/vk', function () use ($app) {
-    return "vk";
+    if(isset($_GET['code'])) {
+        $string = "https://oauth.vk.com/access_token?client_id=" . CLIENT_ID_VK_APP . "&client_secret=" . client_secret . "&redirect_uri=". REDIRECT_URI_VK_APP . "&code=" . $_GET['code'];
+        error_log($string);
+        $dataToken = json_decode(file_get_contents($string));
+        echo "Ваш токен -> " . $dataToken->access_token;
+    }
 });
 
 $app->get('/callback/spotify', function () use ($app) {
+
+    $curl_h = curl_init('http://www.example.com/');
+
+    curl_setopt($curl_h, CURLOPT_HTTPHEADER,
+        array(
+            "Authorization: Basic " . AUTHORISATION_BASE_64_SPOTIFY,
+        )
+    );
+    curl_setopt($curl_h, CURLOPT_POST, 1);
+    curl_setopt($curl_h, CURLOPT_POSTFIELDS, array('key' => '123213'));
+    curl_setopt($curl_h, CURLOPT_RETURNTRANSFER, true);
+
+    $response = curl_exec($curl_h);
+
     return "spotify";
 });
 
@@ -36,16 +65,6 @@ $app->post('/bot', function () use ($app) {
 
 //echo $server.' <- сервер '.$username.' <- имя пользователя '.$password.' <- пароль '.$db.' <- база данных'; //Если нужно узнать данные бд
 
-    $confirmationToken = '13e69364'; //подтверждение
-
-//Ключ доступа сообщества
-    $token = 'a9e54cee09680fb710f00732e55c39766e051a9f1dd90d81fccceb582ec6cb730ea27d8a4301cc9f170cf';
-
-//Secret key
-    $secretKey = 'koc_234432_cok';
-//Версия апи
-    $v = 5.103;
-
     $mysqli = new mysqli($server, $username, $password, $db); //Подключаемся
 
     if ($mysqli->connect_error) {//проверка подключились ли мы
@@ -56,7 +75,7 @@ $app->post('/bot', function () use ($app) {
         $data = json_decode(file_get_contents('php://input'));
 
         //Проверяем secretKey
-        if (strcmp($data->secret, $secretKey) !== 0 && strcmp($data->type, 'confirmation') !== 0)
+        if (strcmp($data->secret, SECRET_KEY_VK_BOT) !== 0 && strcmp($data->type, 'confirmation') !== 0)
             return;//Если не наш, выдаем ошибку серверу vk
 
         //Проверка события запроса
@@ -65,7 +84,7 @@ $app->post('/bot', function () use ($app) {
             //Подтверждения адреса сервера
             case 'confirmation':
                 //Отправляем код
-                echo $confirmationToken;
+                echo CONFIRMATION_TOKEN_VK_BOT;
                 //Создаем таблицу
                 CreateTab($mysqli);
                 break;
@@ -76,12 +95,12 @@ $app->post('/bot', function () use ($app) {
                 //создаем  массив с сообщением
                 $request_params = array(
                     'message' => "", //сообщение
-                    'access_token' => $token, //токен для отправки от имени сообщества
+                    'access_token' => TOKEN_VK_BOT, //токен для отправки от имени сообщества
                     'peer_id' => $data->object->message->from_id, //айди пользователя
                     'random_id' => 0, //0 - не рассылка
                     'read_state' => 1,
                     'user_ids' => 0, // Нет конкретного пользователя кому адресованно сообщение
-                    'v' => $v, //Версия API Vk
+                    'v' => VERSION_API_VK, //Версия API Vk
                     'payload' => 1000,
                     'attachment' => '' //Вложение
                 );
@@ -205,20 +224,6 @@ $app->post('/bot', function () use ($app) {
 
 
 $app->run();
-
-//if(isset($_GET['code'])){
-//    error_log("-------------------------j--------------------");
-//    $client_id = 7445793;
-//    $client_secret = "Wo2hagteHrHp6VxjHMcK";
-//    $string = "https://oauth.vk.com/access_token?client_id=" . $client_id . "&client_secret=" . $client_secret . "&redirect_uri=https://music-statuc-by-kos.herokuapp.com&code=" . $_GET['code'];
-//    error_log($string);
-//
-//    $dataToken = json_decode(file_get_contents($string));
-//
-//    echo "Ваш токен -> " . $dataToken->access_token;
-//
-//}elseif (isset($_GET['access_token'])) {echo "Выаш токен -> " . $_GET['access_token'];}
-//else {
 
 
     function sendPOST($request_params)
