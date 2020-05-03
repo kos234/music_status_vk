@@ -33,6 +33,7 @@ $app->get('/callback/vk', function () use ($app) {
                 "code" => $_GET['code']))));
         echo "Ваш токен -> " . $dataToken->access_token;
     }
+    return "";
 });
 
 $app->get('/callback/spotify', function () use ($app) {
