@@ -51,8 +51,8 @@ if(isset($_GET['code'])) {
         'redirect_uri' => REDIRECT_URI_SPOTIFY));
     curl_setopt($curl_h, CURLOPT_RETURNTRANSFER, true);
 
-    $response = json_decode(curl_exec($curl_h));
-    error_log($response);
+    $response = json_decode(curl_exec($curl_h), true);
+    error_log(print_r($response));
     curl_close($curl_h);
 
     echo "Ваш токен => " . $response->access_token . "\n Ваш токен для смены => " . $response->refresh_token;
