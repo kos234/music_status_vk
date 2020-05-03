@@ -2,15 +2,15 @@
 ini_set('max_execution_time', 900);
 require('../vendor/autoload.php');
 
-define(CLIENT_ID_VK_APP, 7445793); //Айди приложения
-define(CLIENT_SECRET_VK_APP, "Wo2hagteHrHp6VxjHMcK"); //Клиентский зашифрованный ключ приложения
-define(REDIRECT_URI_VK_APP, "https://music-statuc-by-kos.herokuapp.com/callback/vk"); //callback ссылка для приложения
-define(CONFIRMATION_TOKEN_VK_BOT, "13e69364"); //подтверждение
-define(TOKEN_VK_BOT, "a9e54cee09680fb710f00732e55c39766e051a9f1dd90d81fccceb582ec6cb730ea27d8a4301cc9f170cf"); //Ключ доступа сообщества
-define(SECRET_KEY_VK_BOT, "koc_234432_cok"); //Secret key
-define(VERSION_API_VK, 5.103); //Версия апи
-define(AUTHORISATION_BASE_64_SPOTIFY, "Basic ZGRlNmEyOTdjZGMzNDUwNTllZGE5OGM2OWJhNzIyYzA6Y2U0NWU5Y2JjN2RhNDcwMTliNjU0MGY5YWJlMDBhNjg="); //Авторизация спотифай
-define(REDIRECT_URI_SPOTIFY, "https://music-statuc-by-kos.herokuapp.com/callback/spotify"); //callback ссылка для спотифая
+define("CLIENT_ID_VK_APP", 7445793); //Айди приложения
+define("CLIENT_SECRET_VK_APP", "Wo2hagteHrHp6VxjHMcK"); //Клиентский зашифрованный ключ приложения
+define("REDIRECT_URI_VK_APP", "https://music-statuc-by-kos.herokuapp.com/callback/vk"); //callback ссылка для приложения
+define("CONFIRMATION_TOKEN_VK_BOT", "13e69364"); //подтверждение
+define("TOKEN_VK_BOT", "a9e54cee09680fb710f00732e55c39766e051a9f1dd90d81fccceb582ec6cb730ea27d8a4301cc9f170cf"); //Ключ доступа сообщества
+define("SECRET_KEY_VK_BOT", "koc_234432_cok"); //Secret key
+define("VERSION_API_VK", 5.103); //Версия апи
+define("AUTHORISATION_BASE_64_SPOTIFY", "Basic ZGRlNmEyOTdjZGMzNDUwNTllZGE5OGM2OWJhNzIyYzA6Y2U0NWU5Y2JjN2RhNDcwMTliNjU0MGY5YWJlMDBhNjg="); //Авторизация спотифай
+define("REDIRECT_URI_SPOTIFY", "https://music-statuc-by-kos.herokuapp.com/callback/spotify"); //callback ссылка для спотифая
 
 $app = new Silex\Application();
 $app['debug'] = true;
