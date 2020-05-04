@@ -214,7 +214,7 @@ $app->post('/bot', function () use ($app) {
 
     }
 
-    return "error";
+    return "ok";
 });
 
 
