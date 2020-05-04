@@ -5,7 +5,7 @@ require('../vendor/autoload.php');
 define("CLIENT_ID_VK_APP", 7445793); //Айди приложения
 define("CLIENT_SECRET_VK_APP", "Wo2hagteHrHp6VxjHMcK"); //Клиентский зашифрованный ключ приложения
 define("REDIRECT_URI_VK_APP", "https://music-statuc-by-kos.herokuapp.com/callback/vk"); //callback ссылка для приложения
-define("CONFIRMATION_TOKEN_VK_BOT", "13e69364"); //подтверждение
+define("CONFIRMATION_TOKEN_VK_BOT", "f981356a"); //подтверждение
 define("TOKEN_VK_BOT", "a9e54cee09680fb710f00732e55c39766e051a9f1dd90d81fccceb582ec6cb730ea27d8a4301cc9f170cf"); //Ключ доступа сообщества
 define("SECRET_KEY_VK_BOT", "koc_234432_cok"); //Secret key
 define("VERSION_API_VK", 5.103); //Версия апи
@@ -214,7 +214,7 @@ $app->post('/bot', function () use ($app) {
 
     }
 
-    return "ok";
+    return "";
 });
 
 
