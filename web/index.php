@@ -205,7 +205,7 @@ $app->post('/bot', function () use ($app) {
 
                 echo sendPOST($request_params);
 
-                echo "\nok";
+                echo "<br>ok";
                 break;
         }
 
