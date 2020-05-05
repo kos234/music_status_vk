@@ -232,8 +232,7 @@ $app->run();
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_POST => true,
             CURLOPT_POSTFIELDS => http_build_query($request_params),
-            curl_setopt($myCurl, CURLOPT_HTTPHEADER, 'ok')
-
+            CURLOPT_HTTPHEADER =>'ok'
         ));
         $response = curl_exec($myCurl);
         curl_close($myCurl);
