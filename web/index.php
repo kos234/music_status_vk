@@ -206,9 +206,9 @@ $app->post('/bot', function () use ($app) {
                 echo sendPOST($request_params);
 
                 echo "ok";
-                die("ok");
-                exit("ok");
-                return"ok";
+//                die("ok");
+//                exit("ok");
+//                return"ok";
                 break;
         }
 
@@ -231,7 +231,8 @@ $app->run();
             CURLOPT_URL => 'https://api.vk.com/method/messages.send',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_POST => true,
-            CURLOPT_POSTFIELDS => http_build_query($request_params)
+            CURLOPT_POSTFIELDS => http_build_query($request_params),
+            curl_setopt($myCurl, CURLOPT_HTTPHEADER, 'ok')
 
         ));
         $response = curl_exec($myCurl);
