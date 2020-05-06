@@ -203,18 +203,15 @@ $app->post('/bot', function () use ($app) {
                     } else $request_params['message'] = "Вы не указали операцию!";
                 }
 
-                echo sendPOST($request_params);
+                sendPOST($request_params);
 
                 echo "ok";
-//                die("ok");
-//                exit("ok");
-//                return"ok";
                 break;
         }
 
 
         $mysqli->close();
-
+        break;
     }
 
     return "";
@@ -236,7 +233,7 @@ $app->run();
         ));
         $response = curl_exec($myCurl);
         curl_close($myCurl);
-        return $response;
+        echo $response;
     }
 
     function createTab($mysqli)
