@@ -211,7 +211,6 @@ $app->post('/bot', function () use ($app) {
 
 
         $mysqli->close();
-        break;
     }
 
     return "";
