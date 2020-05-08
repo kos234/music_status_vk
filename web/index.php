@@ -89,7 +89,7 @@ $app->post('/bot', function () use ($app) {
 
                 //создаем  массив с сообщением
                 $request_params = array(
-                    'message' => "", //сообщение
+                    'message' => "test", //сообщение
                     'access_token' => TOKEN_VK_BOT, //токен для отправки от имени сообщества
                     'peer_id' => $data->object->message->from_id, //айди пользователя
                     'random_id' => 0, //0 - не рассылка
@@ -100,7 +100,7 @@ $app->post('/bot', function () use ($app) {
                     'attachment' => '' //Вложение
                 );
 
-                //Получаем текст сообщения и разбиваем его на массив слов
+                /*//Получаем текст сообщения и разбиваем его на массив слов
                 $text = explode(' ', $data->object->message->text);
 
                 //Проверяем массив слов
@@ -205,7 +205,11 @@ $app->post('/bot', function () use ($app) {
 
                 sendPOST($request_params);
 
+                echo "ok";*/
+
+                sendMessage(http_build_query($request_params));
                 echo "ok";
+
                 break;
         }
 
@@ -219,6 +223,13 @@ $app->post('/bot', function () use ($app) {
 
 $app->run();
 
+function sendMessage ($req_params) {
+    $ch = curl_init(); curl_setopt($ch, CURLOPT_URL, 'https://api.vk.com/method/messages.send');
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $req_params);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_exec($ch);curl_close($ch);
+}
 
     function sendPOST($request_params)
     {
