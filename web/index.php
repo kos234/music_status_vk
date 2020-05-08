@@ -4,7 +4,6 @@ require('../vendor/autoload.php');
 
 define("CLIENT_ID_VK_APP", 7445793); //Айди приложения
 define("CLIENT_SECRET_VK_APP", "Wo2hagteHrHp6VxjHMcK"); //Клиентский зашифрованный ключ приложения
-define("REDIRECT_URI_VK_APP", "https://music-statuc-by-kos.herokuapp.com/callback/vk"); //callback ссылка для приложения
 define("CONFIRMATION_TOKEN_VK_BOT", "f981356a"); //подтверждение
 define("TOKEN_VK_BOT", "a9e54cee09680fb710f00732e55c39766e051a9f1dd90d81fccceb582ec6cb730ea27d8a4301cc9f170cf"); //Ключ доступа сообщества
 define("SECRET_KEY_VK_BOT", "koc_234432_cok"); //Secret key
@@ -29,7 +28,7 @@ $app->get('/callback/vk', function () use ($app) {
         $url = "https://oauth.vk.com/access_token?";
         $dataToken = json_decode(file_get_contents($url . http_build_query(array("client_id" => CLIENT_ID_VK_APP,
                "client_secret" => CLIENT_SECRET_VK_APP,
-                "redirect_uri" => REDIRECT_URI_VK_APP,
+                "redirect_uri" => "https://oauth.vk.com/blank.html",
                 "code" => $_GET['code']))));
         echo "Ваш токен => " . $dataToken->access_token;
     }
