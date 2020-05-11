@@ -45,6 +45,16 @@ if(isset($_GET['code'])) {
     return "";
 });
 
+$app->get('/getDBConf', function () use ($app) {
+    $urlDB = parse_url(getenv("CLEARDB_DATABASE_URL")); //Подключаемся к бд
+    $server = $urlDB["host"];
+    $username = $urlDB["user"];
+    $password = $urlDB["pass"];
+    $db = substr($urlDB["path"], 1);
+
+     return $server.' <- сервер '.$username.' <- имя пользователя '.$password.' <- пароль '.$db.' <- база данных'; //Если нужно узнать данные бд
+});
+
 $app->post('/bot', function () use ($app) {
 
     if (!isset($_REQUEST)) //проверяем получили ли мы запрос
@@ -56,8 +66,6 @@ $app->post('/bot', function () use ($app) {
     $username = $urlDB["user"];
     $password = $urlDB["pass"];
     $db = substr($urlDB["path"], 1);
-
-echo $server.' <- сервер '.$username.' <- имя пользователя '.$password.' <- пароль '.$db.' <- база данных'; //Если нужно узнать данные бд
 
     $mysqli = new mysqli($server, $username, $password, $db); //Подключаемся
 
