@@ -46,8 +46,8 @@ if(isset($_GET['code'])) {
 });
 
 $app->get('/getDBConf', function () use ($app) {//Если нужно узнать данные бд
-    if(isset($_GET['code'])) {
-        if($_GET['code'] == getenv("PASSWORD_GET_DB")){
+    if(isset($_GET['password'])) {
+        if($_GET['password'] == getenv("PASSWORD_GET_DB")){
         $urlDB = parse_url(getenv("CLEARDB_DATABASE_URL")); //Подключаемся к бд
         $server = $urlDB["host"];
         $username = $urlDB["user"];
