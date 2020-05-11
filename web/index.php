@@ -2,14 +2,14 @@
 ini_set('max_execution_time', 900);
 require('../vendor/autoload.php');
 
-define("CLIENT_ID_VK_APP", 7445793); //Айди приложения
-define("CLIENT_SECRET_VK_APP", "Wo2hagteHrHp6VxjHMcK"); //Клиентский зашифрованный ключ приложения
-define("CONFIRMATION_TOKEN_VK_BOT", "f981356a"); //подтверждение
-define("TOKEN_VK_BOT", "a9e54cee09680fb710f00732e55c39766e051a9f1dd90d81fccceb582ec6cb730ea27d8a4301cc9f170cf"); //Ключ доступа сообщества
-define("SECRET_KEY_VK_BOT", "koc_234432_cok"); //Secret key
+define("CLIENT_ID_VK_APP", getenv("CLIENT_ID_VK_APP")); //Айди приложения
+define("CLIENT_SECRET_VK_APP", getenv("CLIENT_SECRET_VK_APP")); //Клиентский зашифрованный ключ приложения
+define("CONFIRMATION_TOKEN_VK_BOT", getenv("CONFIRMATION_TOKEN_VK_BOT")); //подтверждение
+define("TOKEN_VK_BOT", getenv("TOKEN_VK_BOT")); //Ключ доступа сообщества
+define("SECRET_KEY_VK_BOT", getenv("SECRET_KEY_VK_BOT")); //Secret key
 define("VERSION_API_VK", 5.103); //Версия апи
-define("AUTHORISATION_BASE_64_SPOTIFY", "ZGRlNmEyOTdjZGMzNDUwNTllZGE5OGM2OWJhNzIyYzA6Y2U0NWU5Y2JjN2RhNDcwMTliNjU0MGY5YWJlMDBhNjg="); //Авторизация спотифай
-define("REDIRECT_URI_SPOTIFY", "https://music-statuc-by-kos.herokuapp.com/callback/spotify"); //callback ссылка для спотифая
+define("AUTHORISATION_BASE_64_SPOTIFY", getenv("AUTHORISATION_BASE_64_SPOTIFY")); //Авторизация спотифай
+define("REDIRECT_URI_SPOTIFY", getenv("REDIRECT_URI_SPOTIFY")); //callback ссылка для спотифая
 
 $app = new Silex\Application();
 $app['debug'] = true;
@@ -35,7 +35,7 @@ $app->get('/vk', function () use ($app) {
     return "";
 });
 
-$app->get('/callback', function () use ($app) {
+$app->get('/spotify', function () use ($app) {
 if(isset($_GET['code'])) {
 
     $output = shell_exec("curl -H \"Authorization: Basic ". AUTHORISATION_BASE_64_SPOTIFY . "\" -d grant_type=authorization_code -d code=". $_GET['code'] ." -d redirect_uri=". REDIRECT_URI_SPOTIFY . " https://accounts.spotify.com/api/token --ssl-no-revoke");
@@ -45,14 +45,17 @@ if(isset($_GET['code'])) {
     return "";
 });
 
-$app->get('/getDBConf', function () use ($app) {
-    $urlDB = parse_url(getenv("CLEARDB_DATABASE_URL")); //Подключаемся к бд
-    $server = $urlDB["host"];
-    $username = $urlDB["user"];
-    $password = $urlDB["pass"];
-    $db = substr($urlDB["path"], 1);
-
-     return $server. " <- сервер <br>".$username." <- имя пользователя <br>".$password." <- пароль <br>".$db." <- база данных <br>"; //Если нужно узнать данные бд
+$app->get('/getDBConf', function () use ($app) {//Если нужно узнать данные бд
+    if(isset($_GET['code'])) {
+        if($_GET['code'] == getenv("PASSWORD_GET_DB")){
+        $urlDB = parse_url(getenv("CLEARDB_DATABASE_URL")); //Подключаемся к бд
+        $server = $urlDB["host"];
+        $username = $urlDB["user"];
+        $password = $urlDB["pass"];
+        $db = substr($urlDB["path"], 1);
+        echo $server. " <- сервер <br>".$username." <- имя пользователя <br>".$password." <- пароль <br>".$db." <- база данных <br>";
+    }else echo "Неверный пароль! Ану брысь!";}
+     return '';
 });
 
 $app->post('/bot', function () use ($app) {

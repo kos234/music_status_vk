@@ -34,26 +34,29 @@ public class Main {
     public static void main(String[] args) {
             String tokenVk = "",
                 tokenSpotify = "",
-                refreshTokenSpotify = "AQCzQ-650Mcdxh6LQlTRQuTel56yUYuWDPPwz4DX_wQIwMkneoHo_Nva-LMBrQd_ps-b0DyhWzHP_yY-sws1cy30oemegL9IzTOQxLAjmaDeOycoyqrePM8mE7QIFYaOqwg",
+                refreshTokenSpotify = "",
                 versionAPIVk = "5.103",
-                authorizationSpotify = "ZGRlNmEyOTdjZGMzNDUwNTllZGE5OGM2OWJhNzIyYzA6Y2U0NWU5Y2JjN2RhNDcwMTliNjU0MGY5YWJlMDBhNjg=";
+                authorizationSpotify = ""; //base 64 encode
 
             final int TIME_SLEEP = 60000; //default 60000 = 1 min
 
         try {
-            Connection MySQL = connection();
-            System.out.print("Подключились!");
+            String[] help = getConf();
 
-            PreparedStatement query = MySQL.prepareStatement("CREATE TABLE IF NOT EXISTS `dataSettings` (`operationId` VarChar( 255 ) NOT NULL DEFAULT 'off',`lastStatus` VarChar( 255 ) NULL, `tokenSpotify` VarChar( 400 ) NOT NULL,`lastMusicStatus` VarChar( 400 ) NULL, `isPhotoMusic` TinyInt( 1 ) NOT NULL DEFAULT 0, `albumForPhotoMusic` Int( 255 ) NULL, `user_id` VarChar( 255 ) NOT NULL, CONSTRAINT `unique_user_id` UNIQUE( `user_id` ), `tokenVK` VarChar( 255 ) NOT NULL) ENGINE = InnoDB;");
+            Connection MySQL = connection(help[0], help[1], help[2]);
+            System.out.print("Подключились!");
+            authorizationSpotify = help[3];
+            PreparedStatement query = MySQL.prepareStatement("CREATE TABLE IF NOT EXISTS `dataSettings` (`operationId` VarChar( 255 ) NOT NULL DEFAULT 'off',`lastStatus` VarChar( 255 ) NULL,`refreshTokenSpotify` VarChar( 400 ) NOT NULL, `tokenSpotify` VarChar( 400 ) NOT NULL,`lastMusicStatus` VarChar( 400 ) NULL, `isPhotoMusic` TinyInt( 1 ) NOT NULL DEFAULT 0, `albumForPhotoMusic` Int( 255 ) NULL, `user_id` VarChar( 255 ) NOT NULL, CONSTRAINT `unique_user_id` UNIQUE( `user_id` ), `tokenVK` VarChar( 255 ) NOT NULL) ENGINE = InnoDB;");
             query.executeUpdate();
 
             while (true){
-                MySQL = connection();
+                MySQL = connection(help[0], help[1], help[2]);
                 query = MySQL.prepareStatement("SELECT * FROM `dataSettings`");
                 ResultSet infoUsers = query.executeQuery();
                 while (infoUsers.next()) {
                     tokenSpotify = infoUsers.getString("tokenSpotify");
                     tokenVk = infoUsers.getString("tokenVK");
+                    refreshTokenSpotify = infoUsers.getString("refreshTokenSpotify");
                     switch (infoUsers.getString("operationId")) {
                         case "start":
                             JSONObject text = (JSONObject) getRequestJSON(new URL("https://api.vk.com/method/status.get?access_token=" + tokenVk  + "&user_id=" + infoUsers.getString("user_id") + "&v=" + versionAPIVk)).get("response");
@@ -84,8 +87,20 @@ public class Main {
 
     }
 
-    public static Connection connection () throws SQLException {
-        Connection MySQL = DriverManager.getConnection("jdbc:mysql://us-cdbr-iron-east-01.cleardb.net/heroku_c16bade54c14291", "b1037efd334a40", "4ab8f2f3");
+    public static String[] getConf() throws IOException {
+            BufferedReader reader = null;
+            reader = new BufferedReader(new FileReader(new File("conf.txt")));
+            StringBuilder result = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                result.append(line);
+            }
+
+        return result.toString().split("~");
+    }
+
+    public static Connection connection (String url, String user, String password) throws SQLException {
+        Connection MySQL = DriverManager.getConnection(url, user, password);
 
         PreparedStatement query = MySQL.prepareStatement("SET NAMES 'utf8'");
         query.executeUpdate();
