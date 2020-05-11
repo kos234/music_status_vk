@@ -116,7 +116,7 @@ $app->post('/bot', function () use ($app) {
                     $request_params['message'] = "&#129302;Music status for Vk by kos v1.0.0\n\n"
                         . "&#9999;Команды:\n"
                         . "&#128196;/Info|Инфо - информация о проекте\n"
-                        . "&#9881;/start|начать {Токен Spotify} {Токен VK} - подключение\n"
+                        . "&#9881;/start|начать {Токен Spotify} {Токен замены Spotify} {Токен VK} - подключение\n"
                         . "&#127773;/on|включить - включает статус\n"
                         . "&#127770;/off|выключить - выключает статус\n"
                         . "&#127763;/set operation|включить операцию {off, start, on, finish} - включает определенную операцию статуса\n\n"
@@ -134,12 +134,14 @@ $app->post('/bot', function () use ($app) {
                 } elseif (($text[0] == '/start') || ($text[0] == '/Start') || ($text[0] == '/начать') || ($text[0] == '/Начать')) {
                     if (isset($text[1])){
                         if (isset($text[2])) {
+                        if (isset($text[3])) {
 
-                            $mysqli->query("INSERT INTO `datasettings` (`tokenSpotify`, `tokenVK`, `user_id`) VALUES ('" . $text[1] . "', '" . $text[2] . "', '" . $request_params["peer_id"] . "')
-                        ON DUPLICATE KEY UPDATE `user_id` = '" . $request_params["peer_id"] . "', `tokenSpotify` = '" . $text[1] . "', `tokenVK` = '" . $text[2] . "'");
+                            $mysqli->query("INSERT INTO `datasettings` (`tokenSpotify`, `tokenVK`, `user_id`, `refreshTokenSpotify`) VALUES ('" . $text[1] . "', '" . $text[3] . "', '" . $request_params["peer_id"] . "', '" . $text[2] . "')
+                        ON DUPLICATE KEY UPDATE `user_id` = '" . $request_params["peer_id"] . "', `tokenSpotify` = '" . $text[1] . "', `tokenVK` = '" . $text[2] . "', `refreshTokenSpotify` = '" . $text[2] . "'");
 
                             $request_params['message'] = "Настройка завершена, теперь напишите /on|включить чтобы начать использование!";
                         }else $request_params['message'] = "Вы не указали токен VK!";
+                        }else $request_params['message'] = "Вы не указали токен смены Spotify!";
                     } else $request_params['message'] = "Вы не указали токен Spotify!";
 
                 } elseif (($text[0] == '/on' || $text[0] == '/On') || ($text[0] == '/включить' || $text[0] == '/Включить')) {
