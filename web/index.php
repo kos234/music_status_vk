@@ -79,8 +79,6 @@ $app->post('/bot', function () use ($app) {
             case 'confirmation':
                 //Отправляем код
                 echo CONFIRMATION_TOKEN_VK_BOT;
-                //Создаем таблицу
-                CreateTab($mysqli);
                 break;
 
             //Новое сообщение
@@ -104,11 +102,11 @@ $app->post('/bot', function () use ($app) {
 
                 //Проверяем массив слов
                 if (($text[0] == '/info') || ($text[0] == '/Info') || ($text[0] == '/инфо') || ($text[0] == '/Инфо') || ($text[0] == '/') || ($text[0] == '/') || ($text[0] == '/инфа') || ($text[0] == '/Инфа')) {
-                    $request_params['message'] = "Music status for Vk by kos v1.0.0 \t \t
-                      Команды: \t 
-                      /Info|Инфо - информация о проекте \t 
-                      /start|начать {Токен Spotify} {Токен VK} - подключение \t
-                      /on|включить - включает статус \t
+                    $request_params['message'] = "Music status for Vk by kos v1.0.0 \r
+                      Команды: \f
+                      /Info|Инфо - информация о проекте \v 
+                      /start|начать {Токен Spotify} {Токен VK} - подключение \e
+                      /on|включить - включает статус \n
                       /off|выключить - выключает статус \t 
                       /set operation|включить операцию {off, start, on, finish} - включает определенную операцию статуса \n
                       Операции статуса: \t
@@ -123,7 +121,7 @@ $app->post('/bot', function () use ($app) {
                       В разработки: вывод обложки трека в спецаильный альбом, подключение к YouTube и другим сервисам";
 
                 } elseif (($text[0] == '/start') || ($text[0] == '/Start') || ($text[0] == '/начать') || ($text[0] == '/Начать')) {
-                    if (isset($text[1]) && isset($text[2]) && isset($text[3]) && isset($text[4]) && isset($text[5])) {
+                    if (isset($text[1]) && isset($text[2])) {
 
                         $mysqliMusicStatus = new mysqli($text[2], $text[3], $text[4], $text[5]);
 
@@ -230,19 +228,6 @@ $app->run();
         ));
         curl_exec($myCurl);
         curl_close($myCurl);
-    }
-
-    function createTab($mysqli)
-    {
-        $mysqli->query("CREATE TABLE IF NOT EXISTS `usersData` ( 
-	`user_id` Int( 255 ) NOT NULL,
-	`server` VarChar( 255 ) NOT NULL,
-	`user_name` VarChar( 255 ) NOT NULL,
-	`password` VarChar( 255 ) NOT NULL,
-	`data_base` VarChar( 255 ) NOT NULL,
-	`spotifyToken` VarChar( 400 ) NOT NULL,
-	CONSTRAINT `unique_user_id` UNIQUE( `user_id` ) )
-ENGINE = InnoDB;");//Создаем таблицу в бд
     }
 
     ?> */
