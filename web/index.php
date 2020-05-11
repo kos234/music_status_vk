@@ -57,7 +57,7 @@ $app->post('/bot', function () use ($app) {
     $password = $urlDB["pass"];
     $db = substr($urlDB["path"], 1);
 
-//echo $server.' <- сервер '.$username.' <- имя пользователя '.$password.' <- пароль '.$db.' <- база данных'; //Если нужно узнать данные бд
+echo $server.' <- сервер '.$username.' <- имя пользователя '.$password.' <- пароль '.$db.' <- база данных'; //Если нужно узнать данные бд
 
     $mysqli = new mysqli($server, $username, $password, $db); //Подключаемся
 
@@ -123,20 +123,14 @@ $app->post('/bot', function () use ($app) {
                 } elseif (($text[0] == '/start') || ($text[0] == '/Start') || ($text[0] == '/начать') || ($text[0] == '/Начать')) {
                     if (isset($text[1]) && isset($text[2])) {
 
-                        $mysqliMusicStatus = new mysqli($text[2], $text[3], $text[4], $text[5]);
-
-                        if ($mysqliMusicStatus) {
-
-                            $mysqliMusicStatus->query("SET NAMES 'utf8'");
-                            $mysqliMusicStatus->query("INSERT INTO `datasettings` (`lastStatus`, `operationId`, `tokenSpotify`) VALUES ('', 'off', '" . $text[5] . "')");
+                        $mysqli->query("INSERT INTO `datasettings` (`operationId`, `tokenSpotify`, `tokenVK`) VALUES ('', 'off', '" . $text[5] . "')");
 
                             $mysqli->query("INSERT INTO `usersData` (`user_id`,`server`,`user_name`,`password`,`data_base`,`spotifyToken`) 
                         VALUES ('" . $data->object->message->from_id . "' , '" . $text[1] . "' , '" . $text[2] . "', '" . $text[3] . "', '" . $text[4] . "', '" . $text[5] . "')
 	      		 ON DUPLICATE KEY UPDATE `user_id` = '" . $data->object->message->from_id . "', `server` = '" . $text[1] . "', `user_name` = '" . $text[2] . "' , `password` = '" . $text[3] . "', `data_base` = '" . $text[4] . "', `spotifyToken` = '" . $text[5] . "'");
 
                             $request_params['message'] = "Настройка завершена, теперь напишите /on|включить чтобы начать использование!";
-                        } else
-                            $request_params['message'] = "Неверные данные!";
+
                     } else $request_params['message'] = "Вы указали не все параметры!";
 
                 } elseif (($text[0] == '/on' || $text[0] == '/On') || ($text[0] == '/включить' || $text[0] == '/Включить')) {
