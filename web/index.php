@@ -110,7 +110,7 @@ $app->post('/bot', function () use ($app) {
 
                 //Проверяем массив слов
                 if (($text[0] == '/info') || ($text[0] == '/Info') || ($text[0] == '/инфо') || ($text[0] == '/Инфо') || ($text[0] == '/') || ($text[0] == '/') || ($text[0] == '/инфа') || ($text[0] == '/Инфа')) {
-                    $request_params['message'] = "Music status for Vk by kos v1.0.0 \r\n
+                    $request_params['message'] = "Music status for Vk by kos v1.0.0 \r
                       \rКоманды: \f
                       /Info|Инфо - информация о проекте \v 
                       /start|начать {Токен Spotify} {Токен VK} - подключение \e
