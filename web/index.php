@@ -23,7 +23,7 @@ $app->get('/', function () use ($app) {
     return "";
 });
 
-$app->get('/callback/vk', function () use ($app) {
+$app->get('/vk', function () use ($app) {
     if(isset($_GET['code'])) {
         $url = "https://oauth.vk.com/access_token?";
         $dataToken = json_decode(file_get_contents($url . http_build_query(array("client_id" => CLIENT_ID_VK_APP,
@@ -35,7 +35,7 @@ $app->get('/callback/vk', function () use ($app) {
     return "";
 });
 
-$app->get('/callback/spotify', function () use ($app) {
+$app->get('/callback', function () use ($app) {
 if(isset($_GET['code'])) {
 
     $output = shell_exec("curl -H \"Authorization: Basic ". AUTHORISATION_BASE_64_SPOTIFY . "\" -d grant_type=authorization_code -d code=". $_GET['code'] ." -d redirect_uri=". REDIRECT_URI_SPOTIFY . " https://accounts.spotify.com/api/token --ssl-no-revoke");
@@ -103,9 +103,9 @@ $app->post('/bot', function () use ($app) {
                 $text = explode(' ', $data->object->message->text);
 
                 //Проверяем массив слов
-                if (($text[0] == '/info') || ($text[0] == '/Info') || ($text[0] == '/инфо') || ($text[0] == '/Инфо')) {
+                if (($text[0] == '/info') || ($text[0] == '/Info') || ($text[0] == '/инфо') || ($text[0] == '/Инфо') || ($text[0] == '/') || ($text[0] == '/') || ($text[0] == '/инфа') || ($text[0] == '/Инфа')) {
                     $request_params['message'] = "Music status for Vk by kos v1.0.0 \n
-                      Команды: \t 
+                      Команды: \n 
                       /Info|Инфо - информация о проекте \t 
                       /start|начать {Сервер базы данных} {Имя пользователя базы данных} {Пароль базы данных} {Имя базы данных} {Токен Spotify} - настройка первого запуска \t
                       /off|выключить - выключает статус \t 
