@@ -1,28 +1,8 @@
-# php-getting-started
+# Music status for vk / Музыкальный статус для вк
+### Created using the library / Создано с использованием библиотеки: [php-getting-started](https://github.com/heroku/php-getting-started)
 
-A barebones PHP app that makes use of the [Silex](http://silex.sensiolabs.org/) web framework, which can easily be deployed to Heroku.
+![example](https://i.ibb.co/mb8Nv10/logo.jpg)
 
-This application supports the [Getting Started with PHP on Heroku](https://devcenter.heroku.com/articles/getting-started-with-php) article - check it out.
+# Connection / Подключение
+## Step one: getting a spotify token / Шаг первый: получение токена Spotify
 
-## Deploying
-
-Install the [Heroku Toolbelt](https://toolbelt.heroku.com/).
-
-```sh
-$ git clone git@github.com:heroku/php-getting-started.git # or clone your own fork
-$ cd php-getting-started
-$ heroku create
-$ git push heroku master
-$ heroku open
-```
-
-or
-
-[![Deploy to Heroku](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy)
-
-## Documentation
-
-For more information about using PHP on Heroku, see these Dev Center articles:
-
-- [Getting Started with PHP on Heroku](https://devcenter.heroku.com/articles/getting-started-with-php)
-- [PHP on Heroku](https://devcenter.heroku.com/categories/php)
