@@ -1,5 +1,4 @@
 vendor/
 .env
-.idea/
-music status/.idea/
-music status/conf.txt
+.idea
+conf.txt
