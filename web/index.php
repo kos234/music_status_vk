@@ -52,7 +52,7 @@ $app->get('/getDBConf', function () use ($app) {
     $password = $urlDB["pass"];
     $db = substr($urlDB["path"], 1);
 
-     return $server.' <- сервер '.$username.' <- имя пользователя '.$password.' <- пароль '.$db.' <- база данных'; //Если нужно узнать данные бд
+     return $server. " <- сервер <br>".$username." <- имя пользователя <br>".$password." <- пароль <br>".$db." <- база данных <br>"; //Если нужно узнать данные бд
 });
 
 $app->post('/bot', function () use ($app) {
@@ -129,38 +129,36 @@ $app->post('/bot', function () use ($app) {
                       В разработки: вывод обложки трека в спецаильный альбом, подключение к YouTube и другим сервисам";
 
                 } elseif (($text[0] == '/start') || ($text[0] == '/Start') || ($text[0] == '/начать') || ($text[0] == '/Начать')) {
-                    if (isset($text[1]) && isset($text[2])) {
+                    if (isset($text[1])){
+                        if (isset($text[2])) {
 
-                        $mysqli->query("INSERT INTO `datasettings` (`operationId`, `tokenSpotify`, `tokenVK`) VALUES ('', 'off', '" . $text[5] . "')");
-
-                            $mysqli->query("INSERT INTO `usersData` (`user_id`,`server`,`user_name`,`password`,`data_base`,`spotifyToken`) 
-                        VALUES ('" . $data->object->message->from_id . "' , '" . $text[1] . "' , '" . $text[2] . "', '" . $text[3] . "', '" . $text[4] . "', '" . $text[5] . "')
-	      		 ON DUPLICATE KEY UPDATE `user_id` = '" . $data->object->message->from_id . "', `server` = '" . $text[1] . "', `user_name` = '" . $text[2] . "' , `password` = '" . $text[3] . "', `data_base` = '" . $text[4] . "', `spotifyToken` = '" . $text[5] . "'");
+                            $mysqli->query("INSERT INTO `datasettings` (`tokenSpotify`, `tokenVK`, `user_id`) VALUES ('" . $text[1] . "', '" . $text[2] . "', '" . $request_params["peer_id"] . "')
+                        ON DUPLICATE KEY UPDATE `user_id` = '" . $request_params["peer_id"] . "', `tokenSpotify` = '" . $text[1] . "', `tokenVK` = '" . $text[2] . "'");
 
                             $request_params['message'] = "Настройка завершена, теперь напишите /on|включить чтобы начать использование!";
-
-                    } else $request_params['message'] = "Вы указали не все параметры!";
+                        }else $request_params['message'] = "Вы не указали токен VK!";
+                    } else $request_params['message'] = "Вы не указали токен Spotify!";
 
                 } elseif (($text[0] == '/on' || $text[0] == '/On') || ($text[0] == '/включить' || $text[0] == '/Включить')) {
-                    $res = $mysqli->query("SELECT * FROM `usersData` WHERE `user_id` = '" . $data->object->message->from_id . "'");
+                    $res = $mysqli->query("SELECT * FROM `datasettings` WHERE `user_id` = '" . $data->object->message->from_id . "'");
                     $result = $res->fetch_assoc();
                     if (isset($result['user_id'])) {
-                        $mysqliMusicStatus = new mysqli($result['server'], $result['user_name'], $result['password'], $result['data_base']);
-                        $mysqliMusicStatus->query("SET NAMES 'utf8'");
-                        $mysqliMusicStatus->query("UPDATE `datasettings` SET `operationId`= 'start'");
+
+                        $mysqli->query("UPDATE `datasettings` SET `operationId`= 'start'");
 
                         $request_params['message'] = "Включенно!";
-                    } else $request_params['message'] = "Вы не привязаны к базе данных! Напишите /start|начать {Сервер базы данных} {Имя пользователя базы данных} {Пароль базы данных} {Имя базы данных} {Токен Spotify} для привязки!";
+                    } else $request_params['message'] = "Вы не привязаны к базе данных! Напишите /start|начать {Токен Spotify} {Токен VK} для привязки!";
+
                 } elseif (($text[0] == '/off' || $text[0] == '/Off') || ($text[0] == '/выключить' || $text[0] == '/Выключить')) {
-                    $res = $mysqli->query("SELECT * FROM `usersData` WHERE `user_id` = '" . $data->object->message->from_id . "'");
+                    $res = $mysqli->query("SELECT * FROM `datasettings` WHERE `user_id` = '" . $data->object->message->from_id . "'");
                     $result = $res->fetch_assoc();
                     if (isset($result['user_id'])) {
-                        $mysqliMusicStatus = new mysqli($result['server'], $result['user_name'], $result['password'], $result['data_base']);
-                        $mysqliMusicStatus->query("SET NAMES 'utf8'");
-                        $mysqliMusicStatus->query("UPDATE `datasettings` SET `operationId`= 'finish'");
+
+                        $mysqli->query("UPDATE `datasettings` SET `operationId`= 'finish'");
 
                         $request_params['message'] = "Выключенно!";
-                    } else $request_params['message'] = "Вы не привязаны к базе данных! Напишите /start|начать {Сервер базы данных} {Имя пользователя базы данных} {Пароль базы данных} {Имя базы данных} {Токен Spotify} для привязки!";
+                    } else $request_params['message'] = "Вы не привязаны к базе данных! Напишите /start|начать {Токен Spotify} {Токен VK} для привязки!";
+
                 } elseif ((($text[0] == '/Set' || $text[0] == '/set') || ($text[0] == '/включить' || $text[0] == '/Включить')) && (($text[1] == 'operation' || $text[1] == 'операцию'))) {
                     if (isset($text[1])) {
                         $error = false;
@@ -175,7 +173,7 @@ $app->post('/bot', function () use ($app) {
                                 break;
 
                             case "on":
-                                $type = "on"; // Не гавно код, а проверка на то ввел ли пользователь правильные операции
+                                $type = "on"; // Не говно код, а проверка на то ввел ли пользователь правильные операции
                                 break;
 
                             case "finish":
@@ -187,19 +185,18 @@ $app->post('/bot', function () use ($app) {
                                 break;
                         }
 
-                        if ($error) {
+                        if (!$error) {
 
-                            $res = $mysqli->query("SELECT * FROM `usersData` WHERE `user_id` = '" . $data->object->message->from_id . "'");
+                            $res = $mysqli->query("SELECT * FROM `datasettings` WHERE `user_id` = '" . $data->object->message->from_id . "'");
                             $result = $res->fetch_assoc();
                             if (isset($result['user_id'])) {
-                                $mysqliMusicStatus = new mysqli($result['server'], $result['user_name'], $result['password'], $result['data_base']);
-                                $mysqliMusicStatus->query("SET NAMES 'utf8'");
-                                $mysqliMusicStatus->query("UPDATE `datasettings` SET `operationId`= '" . $type . "'");
+
+                                $mysqli->query("UPDATE `datasettings` SET `operationId`= '" . $type . "'");
 
                                 $request_params['message'] = "Включенно!";
 
                             } else $request_params['message'] = "Не верное название операции!";
-                        } else $request_params['message'] = "Вы не привязаны к базе данных! Напишите /start|начать {Сервер базы данных} {Имя пользователя базы данных} {Пароль базы данных} {Имя базы данных} {Токен Spotify} для привязки!";
+                        } else $request_params['message'] = "Вы не привязаны к базе данных! Напишите /start|начать {Токен Spotify} {Токен VK} для привязки!";
                     } else $request_params['message'] = "Вы не указали операцию!";
                 }
 
