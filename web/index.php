@@ -124,6 +124,7 @@ $app->post('/bot', function () use ($app) {
                         if (isset($text[2])) {
                         if (isset($text[3])) {
 
+                            error_log($text[3]);
                             $explodeUrl = $text[3].explode("code=");
                             if(isset($explodeUrl[1])){
                                 error_log($explodeUrl[0] . " or ". $explodeUrl[1]);
