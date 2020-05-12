@@ -136,8 +136,8 @@ $app->post('/bot', function () use ($app) {
                         ON DUPLICATE KEY UPDATE `user_id` = '" . $request_params["peer_id"] . "', `tokenSpotify` = '" . $text[1] . "', `tokenVK` = '" . $text[2] . "', `refreshTokenSpotify` = '" . $text[2] . "'");
 
                                 $request_params['message'] = "&#9989;Настройка завершена, теперь напишите /on|включить чтобы начать использование!";
-                            }else $request_params['message'] = "&#10060;Что-то не так с ссылкой, попробуйте ещё раз!";
-                            }else $request_params['message'] = "&#10060;Что-то не так с ссылкой, попробуйте ещё раз!";
+                            }else $request_params['message'] = "&#10060;Что-то не так с ссылкой, попробуйте ещё раз! Нерабочий код!";
+                            }else $request_params['message'] = "&#10060;Что-то не так с ссылкой, попробуйте ещё раз! Нет кода!";
                         }else $request_params['message'] = "&#10060;Вы не указали ссылку с кодом VK!";
                         }else $request_params['message'] = "&#10060;Вы не указали токен смены Spotify!";
                     } else $request_params['message'] = "&#10060;Вы не указали токен Spotify!";
