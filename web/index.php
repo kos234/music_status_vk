@@ -130,7 +130,7 @@ $app->post('/bot', function () use ($app) {
                             $dataToken = json_decode(file_get_contents("https://oauth.vk.com/access_token?" . http_build_query(array("client_id" => CLIENT_ID_VK_APP,
                                     "client_secret" => CLIENT_SECRET_VK_APP,
                                     "redirect_uri" => "https://oauth.vk.com/blank.html",
-                                    "code" => $_GET['code']))));
+                                    "code" => $explodeUrl[1]))));
                             if(isset($dataToken->access_token)) {
                                 $mysqli->query("INSERT INTO `datasettings` (`tokenSpotify`, `tokenVK`, `user_id`, `refreshTokenSpotify`) VALUES ('" . $text[1] . "', '" . $text[3] . "', '" . $request_params["peer_id"] . "', '" . $text[2] . "')
                         ON DUPLICATE KEY UPDATE `user_id` = '" . $request_params["peer_id"] . "', `tokenSpotify` = '" . $text[1] . "', `tokenVK` = '" . $text[2] . "', `refreshTokenSpotify` = '" . $text[2] . "'");
