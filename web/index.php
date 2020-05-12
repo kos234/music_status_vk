@@ -61,7 +61,7 @@ $app->get('/start', function () use ($app) {
             }else
             error_log("ls" . $out);
 
-            exec("music_status.exe", $outtwo);
+            passthru("music_status.exe", $outtwo);
             if(gettype($outtwo) == "array"){
                 print_r($outtwo);
             }else
