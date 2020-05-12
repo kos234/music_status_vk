@@ -54,9 +54,12 @@ $app->get('/start', function () use ($app) {
         $time = $res->fetch_assoc();
 
         if((time() * 1000) - $time['active_time'] > 120000){
-            echo "Перезагрузка";
+            echo "Перезагрузка <br>";
 
-
+            exec("ls", $out);
+            if(gettype($out) == "array"){
+                print_r($out);
+            }else echo $out;
 
         } else echo "Статус активен";
 
