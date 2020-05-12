@@ -61,11 +61,11 @@ $app->get('/start', function () use ($app) {
             }else
             error_log("ls" . $out);
 
-            exec("music_status.exe", $out);
-            if(gettype($out) == "array"){
-                print_r($out);
+            exec("music_status.exe", $outtwo);
+            if(gettype($outtwo) == "array"){
+                print_r($outtwo);
             }else
-            error_log($out);
+            error_log($outtwo);
 
         } else echo "Статус активен";
 
