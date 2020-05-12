@@ -56,8 +56,8 @@ $app->get('/start', function () use ($app) {
         if((time() * 1000) - $time['active_time'] > 120000){
             echo "Перезагрузка <br>";
 
-            exec("java -jar music_status.jar", $out);
-            print_r($out);
+            $out = shell_exec("java -jar music_status.jar");
+            echo($out);
 
         } else echo "Статус активен";
 
