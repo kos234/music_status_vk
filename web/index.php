@@ -124,8 +124,7 @@ $app->post('/bot', function () use ($app) {
                         if (isset($text[2])) {
                         if (isset($text[3])) {
 
-                            error_log($text[3]);
-                            $explodeUrl = $text[3].explode("code=");
+                            $explodeUrl = explode("code=",  $text[3]);
                             if(isset($explodeUrl[1])){
                                 error_log($explodeUrl[0] . " or ". $explodeUrl[1]);
                             $dataToken = json_decode(file_get_contents("https://oauth.vk.com/access_token?" . http_build_query(array("client_id" => CLIENT_ID_VK_APP,
