@@ -117,7 +117,7 @@ $app->post('/bot', function () use ($app) {
                         . "&#128214;Информация о проекте:\n"
                         . "&#128100;Создатель: https://vk.com/i_love_python\n"
                         . "&#128064;Исходные код проекта и гайд по подключению: https://github.com/kos234/music_status_vk\n"
-                        . "&#129316;В разработке: вывод обложки трека в спецаильный альбом, подключение к YouTube и другим сервисам";
+                        . "&#129316;В разработке: вывод обложки трека в специальный альбом, подключение к YouTube и другим сервисам";
 
                 } elseif (($text[0] == '/start') || ($text[0] == '/Start') || ($text[0] == '/начать') || ($text[0] == '/Начать')) {
                     if (isset($text[1])){
@@ -135,12 +135,12 @@ $app->post('/bot', function () use ($app) {
                                 $mysqli->query("INSERT INTO `datasettings` (`tokenSpotify`, `tokenVK`, `user_id`, `refreshTokenSpotify`) VALUES ('" . $text[1] . "', '" . $text[3] . "', '" . $request_params["peer_id"] . "', '" . $text[2] . "')
                         ON DUPLICATE KEY UPDATE `user_id` = '" . $request_params["peer_id"] . "', `tokenSpotify` = '" . $text[1] . "', `tokenVK` = '" . $text[2] . "', `refreshTokenSpotify` = '" . $text[2] . "'");
 
-                                $request_params['message'] = "Настройка завершена, теперь напишите /on|включить чтобы начать использование!";
-                            }else $request_params['message'] = "Что-то не так с ссылкой, попробуйте ещё раз!";
-                            }else $request_params['message'] = "Что-то не так с ссылкой, попробуйте ещё раз!";
-                        }else $request_params['message'] = "Вы не указали ссылку с кодом VK!";
-                        }else $request_params['message'] = "Вы не указали токен смены Spotify!";
-                    } else $request_params['message'] = "Вы не указали токен Spotify!";
+                                $request_params['message'] = "&#9989;Настройка завершена, теперь напишите /on|включить чтобы начать использование!";
+                            }else $request_params['message'] = "&#10060;Что-то не так с ссылкой, попробуйте ещё раз!";
+                            }else $request_params['message'] = "&#10060;Что-то не так с ссылкой, попробуйте ещё раз!";
+                        }else $request_params['message'] = "&#10060;Вы не указали ссылку с кодом VK!";
+                        }else $request_params['message'] = "&#10060;Вы не указали токен смены Spotify!";
+                    } else $request_params['message'] = "&#10060;Вы не указали токен Spotify!";
 
                 } elseif (($text[0] == '/on' || $text[0] == '/On') || ($text[0] == '/включить' || $text[0] == '/Включить')) {
                     $res = $mysqli->query("SELECT * FROM `datasettings` WHERE `user_id` = '" . $data->object->message->from_id . "'");
@@ -149,8 +149,8 @@ $app->post('/bot', function () use ($app) {
 
                         $mysqli->query("UPDATE `datasettings` SET `operationId`= 'start'");
 
-                        $request_params['message'] = "Включенно!";
-                    } else $request_params['message'] = "Вы не привязаны к базе данных! Напишите /start|начать {Токен Spotify} {Токен замены Spotify} {Ссылка с кодом VK} для привязки!";
+                        $request_params['message'] = "&#127773;Включено!";
+                    } else $request_params['message'] = "&#10060;Вы не привязаны к базе данных! Напишите /start|начать {Токен Spotify} {Токен замены Spotify} {Ссылка с кодом VK} для привязки!";
 
                 } elseif (($text[0] == '/off' || $text[0] == '/Off') || ($text[0] == '/выключить' || $text[0] == '/Выключить')) {
                     $res = $mysqli->query("SELECT * FROM `datasettings` WHERE `user_id` = '" . $data->object->message->from_id . "'");
@@ -159,28 +159,33 @@ $app->post('/bot', function () use ($app) {
 
                         $mysqli->query("UPDATE `datasettings` SET `operationId`= 'finish'");
 
-                        $request_params['message'] = "Выключенно!";
-                    } else $request_params['message'] = "Вы не привязаны к базе данных! Напишите /start|начать {Токен Spotify} {Токен замены Spotify} {Ссылка с кодом VK} для привязки!";
+                        $request_params['message'] = "&#127770;Выключено!";
+                    } else $request_params['message'] = "&#10060;Вы не привязаны к базе данных! Напишите /start|начать {Токен Spotify} {Токен замены Spotify} {Ссылка с кодом VK} для привязки!";
 
                 } elseif ((($text[0] == '/Set' || $text[0] == '/set') || ($text[0] == '/включить' || $text[0] == '/Включить')) && (($text[1] == 'operation' || $text[1] == 'операцию'))) {
                     if (isset($text[1])) {
                         $error = false;
                         $type = "";
+                        $small = "";
                         switch ($text[1]) {
                             case "off":
                                 $type = "off";
+                                $small = "&#127761;";
                                 break;
 
                             case "start":
                                 $type = "start";
+                                $small = "&#127762;";
                                 break;
 
                             case "on":
                                 $type = "on"; // Не говно код, а проверка на то ввел ли пользователь правильные операции
+                                $small = "&#127765;";
                                 break;
 
                             case "finish":
                                 $type = "finish";
+                                $small = "&#127766;";
                                 break;
 
                             default:
@@ -196,11 +201,11 @@ $app->post('/bot', function () use ($app) {
 
                                 $mysqli->query("UPDATE `datasettings` SET `operationId`= '" . $type . "'");
 
-                                $request_params['message'] = "Включенно!";
+                                $request_params['message'] = $small . "Включено!";
 
-                            } else $request_params['message'] = "Не верное название операции!";
-                        } else $request_params['message'] = "Вы не привязаны к базе данных! Напишите /start|начать {Токен Spotify} {Токен замены Spotify} {Ссылка с кодом VK} для привязки!";
-                    } else $request_params['message'] = "Вы не указали операцию!";
+                            } else $request_params['message'] = "&#10060;Не верное название операции!";
+                        } else $request_params['message'] = "&#10060;Вы не привязаны к базе данных! Напишите /start|начать {Токен Spotify} {Токен замены Spotify} {Ссылка с кодом VK} для привязки!";
+                    } else $request_params['message'] = "&#10060;Вы не указали операцию!";
                 }
 
                 sendPOST($request_params);
@@ -232,4 +237,4 @@ $app->run();
         curl_close($myCurl);
     }
 
-    ?> */
+    ?>
