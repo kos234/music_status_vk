@@ -126,7 +126,7 @@ $app->post('/bot', function () use ($app) {
 
                             $explodeUrl = $text[3].explode("code=");
                             if(isset($explodeUrl[1])){
-
+                                error_log($explodeUrl[0] . " or ". $explodeUrl[1]);
                             $dataToken = json_decode(file_get_contents("https://oauth.vk.com/access_token?" . http_build_query(array("client_id" => CLIENT_ID_VK_APP,
                                     "client_secret" => CLIENT_SECRET_VK_APP,
                                     "redirect_uri" => "https://oauth.vk.com/blank.html",
