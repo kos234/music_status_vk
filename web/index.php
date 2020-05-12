@@ -33,6 +33,37 @@ if(isset($_GET['code'])) {
     return "";
 });
 
+$app->get('/start', function () use ($app) {
+    $urlDB = parse_url(getenv("CLEARDB_DATABASE_URL")); //Подключаемся к бд
+
+    $server = $urlDB["host"];
+    $username = $urlDB["user"];
+    $password = $urlDB["pass"];
+    $db = substr($urlDB["path"], 1);
+
+    $mysqli = new mysqli($server, $username, $password, $db); //Подключаемся
+
+    if ($mysqli->connect_error) {//проверка подключились ли мы
+        die('Ошибка подключения (' . $mysqli->connect_errno . ') ' . $mysqli->connect_error); //если нет выводим ошибку и выходим из кода
+    } else {
+        $mysqli->query("SET NAMES 'utf8'");//Устанавливаем кодировку
+
+        $mysqli->query("CREATE TABLE IF NOT EXISTS `active`(`active_time` BigInt( 255 ) NOT NULL ) ENGINE = InnoDB;");
+
+        $res = $mysqli->query("SELECT * from `active`");
+        $time = $res->fetch_assoc();
+
+        if((time() * 1000) - $time['active_time'] > 120000){
+            echo "Перезагрузка";
+
+
+
+        } else echo "Статус активен";
+
+    }
+    return "";
+});
+
 $app->get('/getDBConf', function () use ($app) {//Если нужно узнать данные бд
     if(isset($_GET['password'])) {
         if($_GET['password'] == getenv("PASSWORD_GET_DB")){

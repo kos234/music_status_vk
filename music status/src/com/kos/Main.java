@@ -25,6 +25,7 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.sql.*;
+import java.util.Date;
 
 import static java.lang.Runtime.getRuntime;
 
@@ -47,6 +48,8 @@ public class Main {
             System.out.print("Подключились!");
             authorizationSpotify = help[3];
             PreparedStatement query = MySQL.prepareStatement("CREATE TABLE IF NOT EXISTS `dataSettings` (`operationId` VarChar( 255 ) NOT NULL DEFAULT 'off',`lastStatus` VarChar( 255 ) NULL,`refreshTokenSpotify` VarChar( 400 ) NOT NULL, `tokenSpotify` VarChar( 400 ) NOT NULL,`lastMusicStatus` VarChar( 400 ) NULL, `isPhotoMusic` TinyInt( 1 ) NOT NULL DEFAULT 0, `albumForPhotoMusic` Int( 255 ) NULL, `user_id` VarChar( 255 ) NOT NULL, CONSTRAINT `unique_user_id` UNIQUE( `user_id` ), `tokenVK` VarChar( 255 ) NOT NULL) ENGINE = InnoDB;");
+            query.executeUpdate();
+            query = MySQL.prepareStatement("CREATE TABLE IF NOT EXISTS `active`(`active_time` BigInt( 255 ) NOT NULL ) ENGINE = InnoDB;");
             query.executeUpdate();
 
             while (true){
@@ -74,6 +77,10 @@ public class Main {
                             break;
                     }
                 }
+
+                query = MySQL.prepareStatement("UPDATE `active` SET `active_time` = '" + new Date().getTime() + "'");
+                            query.executeUpdate();
+
                 Thread.sleep(TIME_SLEEP);
             }
 
@@ -197,26 +204,30 @@ public class Main {
     }
 
     public static String replaceSpace(String str){
-        String[] arr = str.split(" ");
-        String string = "";
+        try {
+            String[] arr = str.split(" ");
+            String string = "";
 
-        for (int i =  0; i < arr.length; i++){
-            if(i == 0)
-                string = arr[i];
-            else
-                string = String.join("%20", string, arr[i]);
+            for (int i = 0; i < arr.length; i++) {
+                if (i == 0)
+                    string = arr[i];
+                else
+                    string = String.join("%20", string, arr[i]);
+            }
+
+            String[] arrAnd = string.split("&");
+            String stringReturn = "";
+            for (int i = 0; i < arrAnd.length; i++) {
+                if (i == 0)
+                    stringReturn = arrAnd[i];
+                else
+                    stringReturn = String.join("and", stringReturn, arrAnd[i]);
+            }
+
+            return stringReturn;
+        }catch (NullPointerException e){
+            return "";
         }
-
-        String[] arrAnd = string.split("&");
-        String stringReturn = "";
-        for (int i =  0; i < arrAnd.length; i++){
-            if(i == 0)
-                stringReturn = arrAnd[i];
-            else
-                stringReturn = String.join("and", stringReturn, arrAnd[i]);
-        }
-
-        return stringReturn;
     }
 
     public static JSONObject getRequestJSON(URL url) throws IOException {

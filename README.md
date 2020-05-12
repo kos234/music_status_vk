@@ -31,11 +31,17 @@ Click on the [link](https://vk.com/im?sel=-194913413) and write the bot the comm
 **What other players are supported?** <br>
 So far, only spotify. <br>
 
-**Want more?** <br>
-Write [me](https://vk.com/i_love_python)
+**Want more players?** <br>
+Write [me](https://vk.com/i_love_python) <br>
+
+**Why do I have a different VK background?** <br>
+Extension [VK Styles](https://chrome.google.com/webstore/detail/vk-styles/ceibjdigmfbbgcpkkdpmjokkokklodmc) <br>
 
 **Какие ещё поддерживаются плееры?** <br>
 Пока только spotify. <br>
 
-**Хотите другие?** <br>
-Напишите [мне](https://vk.com/i_love_python)
+**Хотите другие плееры?** <br>
+Напишите [мне](https://vk.com/i_love_python) <br>
+
+**Почему у меня другой задний фон VK?** <br>
+Расширение [VK Styles](https://chrome.google.com/webstore/detail/vk-styles/ceibjdigmfbbgcpkkdpmjokkokklodmc)
