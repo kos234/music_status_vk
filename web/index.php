@@ -55,9 +55,16 @@ $app->get('/start', function () use ($app) {
 
         if((time() * 1000) - $time['active_time'] > 120000){
             echo "Перезагрузка <br>";
-            passthru("ls", $out);
-            error_log($out);
-            passthru("music_status.exe", $out);
+            exec("ls", $out);
+            if(gettype($out) == "array"){
+                print_r($out);
+            }else
+            error_log("ls" . $out);
+
+            exec("music_status.exe", $out);
+            if(gettype($out) == "array"){
+                print_r($out);
+            }else
             error_log($out);
 
         } else echo "Статус активен";
