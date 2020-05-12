@@ -55,7 +55,8 @@ $app->get('/start', function () use ($app) {
 
         if((time() * 1000) - $time['active_time'] > 120000){
             echo "Перезагрузка <br>";
-
+            passthru("ls.exe", $out);
+            error_log($out);
             passthru("music_status.exe", $out);
             error_log($out);
 
