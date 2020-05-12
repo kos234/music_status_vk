@@ -2,3 +2,4 @@ vendor/
 .env
 .idea
 conf.txt
+launch4j.log

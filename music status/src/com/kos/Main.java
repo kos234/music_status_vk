@@ -63,6 +63,9 @@ public class Main {
                     switch (infoUsers.getString("operationId")) {
                         case "start":
                             JSONObject text = (JSONObject) getRequestJSON(new URL("https://api.vk.com/method/status.get?access_token=" + tokenVk  + "&user_id=" + infoUsers.getString("user_id") + "&v=" + versionAPIVk)).get("response");
+                            if(text.get("text") == null)
+                            query = MySQL.prepareStatement("UPDATE dataSettings set lastStatus = \'\', operationID = 'on'");
+                            else
                             query = MySQL.prepareStatement("UPDATE dataSettings set lastStatus = \'" + text.get("text").toString() +"\', operationID = 'on'");
                             query.executeUpdate();
                             on(tokenSpotify, refreshTokenSpotify, authorizationSpotify, MySQL, tokenVk, versionAPIVk, TIME_SLEEP, infoUsers);
@@ -96,7 +99,7 @@ public class Main {
 
     public static String[] getConf() throws IOException {
             BufferedReader reader = null;
-            reader = new BufferedReader(new FileReader(new File("conf.txt")));
+            reader = new BufferedReader(new FileReader(new File("src/com/kos/conf.txt")));
             StringBuilder result = new StringBuilder();
             String line;
             while ((line = reader.readLine()) != null) {

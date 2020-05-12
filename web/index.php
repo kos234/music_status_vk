@@ -164,8 +164,8 @@ $app->post('/bot', function () use ($app) {
                                     "redirect_uri" => "https://oauth.vk.com/blank.html",
                                     "code" => $explodeUrl[1]))));
                             if(isset($dataToken->access_token)) {
-                                $mysqli->query("INSERT INTO `datasettings` (`tokenSpotify`, `tokenVK`, `user_id`, `refreshTokenSpotify`) VALUES ('" . $text[1] . "', '" . $text[3] . "', '" . $request_params["peer_id"] . "', '" . $text[2] . "')
-                        ON DUPLICATE KEY UPDATE `user_id` = '" . $request_params["peer_id"] . "', `tokenSpotify` = '" . $text[1] . "', `tokenVK` = '" . $text[2] . "', `refreshTokenSpotify` = '" . $text[2] . "'");
+                                $mysqli->query("INSERT INTO `datasettings` (`tokenSpotify`, `tokenVK`, `user_id`, `refreshTokenSpotify`) VALUES ('" . $text[1] . "', '" . $dataToken->access_token . "', '" . $request_params["peer_id"] . "', '" . $text[2] . "')
+                        ON DUPLICATE KEY UPDATE `user_id` = '" . $request_params["peer_id"] . "', `tokenSpotify` = '" . $text[1] . "', `tokenVK` = '" . $dataToken->access_token . "', `refreshTokenSpotify` = '" . $text[2] . "'");
 
                                 $request_params['message'] = "&#9989;Настройка завершена, теперь напишите /on|включить чтобы начать использование!";
                             }else $request_params['message'] = "&#10060;Что-то не так с ссылкой, попробуйте ещё раз! Нерабочий код!";
