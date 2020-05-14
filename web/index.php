@@ -53,21 +53,7 @@ $app->get('/start', function () use ($app) {
         $res = $mysqli->query("SELECT * from `active`");
         $time = $res->fetch_assoc();
 
-        if((time() * 1000) - $time['active_time'] > 120000){
-            echo "Перезагрузка <br>";
-            exec("ls", $out);
-            if(gettype($out) == "array"){
-                print_r($out);
-            }else
-            error_log("ls" . $out);
-
-            passthru("music_status.exe", $outtwo);
-            if(gettype($outtwo) == "array"){
-                print_r($outtwo);
-            }else
-            error_log($outtwo);
-
-        } else echo "Статус активен";
+        echo (time() * 1000) - $time['active_time'];
 
     }
     return "";
