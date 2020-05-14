@@ -48,9 +48,9 @@ $app->get('/start', function () use ($app) {
     } else {
         $mysqli->query("SET NAMES 'utf8'");//Устанавливаем кодировку
 
-        $mysqli->query("CREATE TABLE IF NOT EXISTS `active`(`active_time` BigInt( 255 ) NOT NULL ) ENGINE = InnoDB;");
+        $mysqli->query("CREATE TABLE IF NOT EXISTS `active_state`(`active_time` BigInt( 255 ) NOT NULL, `isStart` TinyInt( 1 ) NOT NULL DEFAULT 1 ) ENGINE = InnoDB;");
 
-        $res = $mysqli->query("SELECT * from `active`");
+        $res = $mysqli->query("SELECT * from `active_state`");
         $time = $res->fetch_assoc();
 
         echo (time() * 1000) - $time['active_time'];
@@ -126,7 +126,7 @@ $app->post('/bot', function () use ($app) {
                 $text = explode(' ', $data->object->message->text);
 
                 //Проверяем массив слов
-                if (($text[0] == '/info') || ($text[0] == '/Info') || ($text[0] == '/инфо') || ($text[0] == '/Инфо') || ($text[0] == '/') || ($text[0] == '/') || ($text[0] == '/инфа') || ($text[0] == '/Инфа')) {
+                if (strtolower($text[0]) == '/info' || strtolower($text[0]) == '/инфо' || ($text[0] == '/') || ($text[0] == '/') || strtolower($text[0]) == '/инфа') {
                     $request_params['message'] = "&#129302;Music status for Vk by kos v1.0.0\n\n"
                         . "&#9999;Команды:\n"
                         . "&#128196;/Info|Инфо - информация о проекте\n"
@@ -145,7 +145,7 @@ $app->post('/bot', function () use ($app) {
                         . "&#128064;Исходные код проекта и гайд по подключению: https://github.com/kos234/music_status_vk\n"
                         . "&#129316;В разработке: вывод обложки трека в специальный альбом, подключение к YouTube и другим сервисам";
 
-                } elseif (($text[0] == '/start') || ($text[0] == '/Start') || ($text[0] == '/начать') || ($text[0] == '/Начать')) {
+                } elseif (strtolower($text[0]) == '/start' || strtolower($text[0]) == '/начать') {
                     if (isset($text[1])){
                         if (isset($text[2])) {
                         if (isset($text[3])) {
@@ -168,7 +168,7 @@ $app->post('/bot', function () use ($app) {
                         }else $request_params['message'] = "&#10060;Вы не указали токен смены Spotify!";
                     } else $request_params['message'] = "&#10060;Вы не указали токен Spotify!";
 
-                } elseif (($text[0] == '/on' || $text[0] == '/On') || ($text[0] == '/включить' || $text[0] == '/Включить')) {
+                } elseif (strtolower($text[0]) == '/on' || strtolower($text[0]) == '/включить') {
                     $res = $mysqli->query("SELECT * FROM `datasettings` WHERE `user_id` = '" . $data->object->message->from_id . "'");
                     $result = $res->fetch_assoc();
                     if (isset($result['user_id'])) {
@@ -188,7 +188,21 @@ $app->post('/bot', function () use ($app) {
                         $request_params['message'] = "&#127770;Выключено!";
                     } else $request_params['message'] = "&#10060;Вы не привязаны к базе данных! Напишите /start|начать {Токен Spotify} {Токен замены Spotify} {Ссылка с кодом VK} для привязки!";
 
-                } elseif ((($text[0] == '/Set' || $text[0] == '/set') || ($text[0] == '/включить' || $text[0] == '/Включить')) && (($text[1] == 'operation' || $text[1] == 'операцию'))) {
+                }elseif(strtolower($text[0]) == '/faq'){
+
+                    $request_params['message'] = "Часто задаваемые вопросы:\n\n"
+                    . "Почему после включения или выключения статуса, он обновляется не сразу?\n"
+                    . "Статус всех пользователей обновляется поочерёден раз в 1 минуту. Когда вы выключаете или включаете статус, вы можете попасть в тот промежуток, когда приложение либо обрабатывает других пользователей, либо находится в ожидании 1 минуты.\n\n"
+                    . "Почему обновление происходит раз в 1 минуту?\n"
+                    . "Существует определённый лимит обращений к серверу ВКонтакте и если его превысить, то возможна блокировка вашего аккаунта. Прямо сейчас выясняется другое минимальное безопасное время обращений.\n\n"
+                    . "Какие ещё поддерживаются плееры?\n"
+                    . "Пока только Spotify, но в будущем будут и другие. Расскажите [id388061716|мне] поддержку каких плееров вы бы хотели видеть.\n\n"
+                    . "В гайде на GitHub'e у ВКонтакте какой-то странный фон, как такой сделать?\n"
+                    . "Расширение [2style|Vk Style]";
+
+                }elseif ((strtolower($text[0]) == "/лимит" || strtolower($text[0]) == "/limit")){
+
+                } elseif ((strtolower($text[0]) == '/set' || strtolower($text[0]) == '/включить') && (strtolower($text[1]) == 'operation' || strtolower($text[1]) == 'операцию')) {
                     if (isset($text[1])) {
                         $error = false;
                         $type = "";
