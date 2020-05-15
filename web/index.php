@@ -176,6 +176,7 @@ $app->post('/bot', function () use ($app) {
                     $res = $mysqli->query("SELECT `active_time` FROM `active_state`");
                     $res_active = $res->fetch_assoc();
                     $sec = time() - $res_active['active_time'];
+                    $sec = $text[1];
                     $type = "";
                     if($sec <= 60){
                         $type = " Всё хорошо&#9989;";
