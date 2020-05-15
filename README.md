@@ -1,3 +1,5 @@
+#ТЕХНИЧЕСКИЕ НЕПОЛАДКИ
+
 # Music status for vk / Музыкальный статус для вк
 ### Created using the library / Создано с использованием библиотеки: [php-getting-started](https://github.com/heroku/php-getting-started)
 
@@ -22,26 +24,4 @@ Click on the [link](https://vk.com/im?sel=-194913413) and write the bot the comm
 
 Перейдите по [ссылке](https://vk.com/im?sel=-194913413) и напишите боту команду `/начать {токен Spotify} {токен смены Spotify} {ссылка полученная на втором шаге}`
 
-#### Complete! / Готово!
-
-#### To find out the functions status, write `/info` or `/` to the bot / Чтобы узнать возможно статуса напишите `/инфо(а)` или `/` боту
-
-###FAQ
-
-**What other players are supported?** <br>
-So far, only spotify. <br>
-
-**Want more players?** <br>
-Write [me](https://vk.com/i_love_python) <br>
-
-**Why do I have a different VK background?** <br>
-Extension [VK Styles](https://chrome.google.com/webstore/detail/vk-styles/ceibjdigmfbbgcpkkdpmjokkokklodmc) <br>
-
-**Какие ещё поддерживаются плееры?** <br>
-Пока только spotify. <br>
-
-**Хотите другие плееры?** <br>
-Напишите [мне](https://vk.com/i_love_python) <br>
-
-**Почему у меня другой задний фон VK?** <br>
-Расширение [VK Styles](https://chrome.google.com/webstore/detail/vk-styles/ceibjdigmfbbgcpkkdpmjokkokklodmc)
+#####To find out the functions status, write `/info` or `/` to the bot / Чтобы узнать возможно статуса напишите `/инфо(а)` или `/` боту
