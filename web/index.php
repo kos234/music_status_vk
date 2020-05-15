@@ -185,6 +185,7 @@ $app->post('/bot', function () use ($app) {
                         $type = " Сервер был перезагружен&#9851;";
                     }
                     $sec_padej = "";
+                    error_log("what" . endNumber($sec));
                     if(($sec >= 11 && $sec <= 19) || (endNumber($sec) >= 5 && endNumber($sec) <= 9) || endNumber($sec) == 0)
                         $sec_padej = " секунд ";
                     elseif (endNumber($sec) == 1)
