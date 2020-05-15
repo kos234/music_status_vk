@@ -186,14 +186,14 @@ $app->post('/bot', function () use ($app) {
                         $type = " Сервер был перезагружен&#9851;";
                     }
                     $sec_padej = "";
-                    if(($sec >= 11 && $sec <= 19) || (endNumber($sec) >= 5.0 && endNumber($sec) <= 9.0) || endNumber($sec) == 0.0)
+                    if(($sec >= 11 && $sec <= 19) || (endNumber($sec) >= 5 && endNumber($sec) <= 9) || endNumber($sec) == 0)
                         $sec_padej = " секунд ";
-                    elseif (endNumber($sec) == 1.0)
+                    elseif (endNumber($sec) == 1)
                         $sec_padej = " секунду ";
-                    elseif (endNumber($sec) >= 2.0 && endNumber($sec) <= 4.0)
+                    elseif (endNumber($sec) >= 2 && endNumber($sec) <= 4)
                         $sec_padej = " секунды ";
                     else $sec_padej = " ворнинг!" . endNumber($sec) . " ";
-                    error_log(gettype(abs(endNumber($sec))));
+                    error_log(gettype(endNumber($sec)));
                     error_log(gettype(2.0));
                     $request_params['message'] = "Последний ответ был " . $sec . $sec_padej . "назад." . $type;
 
@@ -262,7 +262,7 @@ $app->post('/bot', function () use ($app) {
 $app->run();
 
     function endNumber($number){
-        return ($number/10 - intdiv($number, 10)) * 10;
+        return round(($number/10 - intdiv($number, 10)) * 10);
     }
 
     function sendPOST($request_params)
