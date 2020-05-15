@@ -269,7 +269,8 @@ $app->run();
         error_log("number" . $number);
         error_log("joap" . intdiv($number, 10));
         error_log(($number/10 - intdiv($number, 10)) * 10);
-        return intval (($number/10 - intdiv($number, 10)) * 10);
+        $var = ($number/10 - intdiv($number, 10)) * 10;
+        return settype($var, "integer");
     }
 
     function sendPOST($request_params)
