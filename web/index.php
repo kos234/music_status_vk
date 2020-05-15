@@ -186,18 +186,13 @@ $app->post('/bot', function () use ($app) {
                         $type = " Сервер был перезагружен&#9851;";
                     }
                     $sec_padej = "";
-                    if(($sec >= 11 && $sec <= 19) || (endNumber($sec) >= 5 && endNumber($sec) <= 9) || endNumber($sec) == 0)
+                    if(($sec >= 11 && $sec <= 19) || (endNumber($sec) >= 5.0 && endNumber($sec) <= 9.0) || endNumber($sec) == 0.0)
                         $sec_padej = " секунд ";
-                    elseif (endNumber($sec) == 1)
+                    elseif (endNumber($sec) == 1.0)
                         $sec_padej = " секунду ";
-                    elseif (endNumber($sec) >= 2 && endNumber($sec) <= 4)
+                    elseif (endNumber($sec) >= 2.0 && endNumber($sec) <= 4.0)
                         $sec_padej = " секунды ";
                     else $sec_padej = " ворнинг!" . endNumber($sec) . " ";
-
-                    error_log("one");
-                    error_log(endNumber($sec) >= 2);
-                    error_log("two");
-                    error_log("var".endNumber($sec));
 
                     $request_params['message'] = "Последний ответ был " . $sec . $sec_padej . "назад." . $type;
 
@@ -266,11 +261,7 @@ $app->post('/bot', function () use ($app) {
 $app->run();
 
     function endNumber($number){
-        error_log("number" . $number);
-        error_log("joap" . intdiv($number, 10));
-        error_log(($number/10 - intdiv($number, 10)) * 10);
-        $var = ($number/10 - intdiv($number, 10)) * 10;
-        return settype($var, "integer");
+        return ($number/10 - intdiv($number, 10)) * 10;
     }
 
     function sendPOST($request_params)
