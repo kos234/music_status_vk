@@ -176,7 +176,6 @@ $app->post('/bot', function () use ($app) {
                     $res = $mysqli->query("SELECT `active_time` FROM `active_state`");
                     $res_active = $res->fetch_assoc();
                     $sec = time() - $res_active['active_time'];
-                    $sec = $text[1];
                     $type = "";
                     if($sec <= 60){
                         $type = " Всё хорошо&#9989;";
@@ -193,8 +192,7 @@ $app->post('/bot', function () use ($app) {
                     elseif (endNumber($sec) >= 2 && endNumber($sec) <= 4)
                         $sec_padej = " секунды ";
                     else $sec_padej = " ворнинг!" . endNumber($sec) . " ";
-                    error_log(gettype(endNumber($sec)));
-                    error_log(gettype(2.0));
+
                     $request_params['message'] = "Последний ответ был " . $sec . $sec_padej . "назад." . $type;
 
                 }elseif (strcasecmp($text[0], '/лимит') == 0 || strcasecmp($text[0], '/limit') == 0){
