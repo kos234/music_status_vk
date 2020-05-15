@@ -175,7 +175,7 @@ $app->post('/bot', function () use ($app) {
                 }elseif(strcasecmp($text[0], '/online') == 0 || strcasecmp($text[0], '/онлайн') == 0){
                     $res = $mysqli->query("SELECT `active_time` FROM `active_state`");
                     $res_active = $res->fetch_assoc();
-                    $sec = time() - $res_active['active_time'];
+                    $sec = (time() * 1000) - $res_active['active_time'];
                     $type = "";
                     if($sec <= 60){
                         $type = " Всё хорошо&#9989;";
