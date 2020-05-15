@@ -194,8 +194,8 @@ $app->post('/bot', function () use ($app) {
                         $sec_padej = " секунды ";
                     else $sec_padej = " ворнинг!" . endNumber($sec) . " ";
 
-                    error_log(endNumber($sec) >= 2);
-                    error_log(endNumber($sec) <= 4);
+                    error_log("one" . endNumber($sec) >= 2);
+                    error_log("two" . endNumber($sec) <= 4);
 
                     $request_params['message'] = "Последний ответ был " . $sec . $sec_padej . "назад." . $type;
 
