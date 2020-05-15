@@ -192,7 +192,7 @@ $app->post('/bot', function () use ($app) {
                     elseif (endNumber($sec) >= 2 && endNumber($sec) <= 4)
                         $sec_padej = " секунды ";
 
-                    $request_params['message'] = time(). "\n" . $res_active['active_time'] . "\nПоследний ответ был " . $sec . $sec_padej . "назад." . $type;
+                    $request_params['message'] = "Последний ответ был " . $sec . $sec_padej . "назад." . $type;
 
                 }elseif (strcasecmp($text[0], '/лимит') == 0 || strcasecmp($text[0], '/limit') == 0){
 
