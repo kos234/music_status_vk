@@ -192,12 +192,6 @@ $app->post('/bot', function () use ($app) {
                         $sec_padej = " секунду ";
                     elseif (endNumber($sec) >= 2 && endNumber($sec) <= 4)
                         $sec_padej = " секунды ";
-                    else $sec_padej = " ворнинг!" . endNumber($sec) . " ";
-
-                    error_log("one");
-                    error_log(endNumber($sec) >= 2);
-                    error_log("two");
-                    error_log(gettype(endNumber($sec)));
 
                     $request_params['message'] = "Последний ответ был " . $sec . $sec_padej . "назад." . $type;
 
@@ -266,9 +260,7 @@ $app->post('/bot', function () use ($app) {
 $app->run();
 
     function endNumber($number){
-        error_log("number" . $number);
-        error_log("joap" . intdiv($number, 10));
-        return ($number/10 - intdiv($number, 10)) * 10;
+        return intval (($number/10 - intdiv($number, 10)) * 10);
     }
 
     function sendPOST($request_params)
