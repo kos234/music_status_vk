@@ -19,9 +19,6 @@ $app->register(new Silex\Provider\MonologServiceProvider(), array(
     'monolog.logfile' => 'php://stderr',
 ));
 
-$app->get('/', function () use ($app) {
-    return "";
-});
 
 $app->get('/spotify', function () use ($app) {
 if(isset($_GET['code'])) {
@@ -30,32 +27,6 @@ if(isset($_GET['code'])) {
     $output = json_decode($output);
     echo "Your token/Ваш токен => " . $output->access_token . "<br> Your refresh token/Ваш токен для смены => " . $output->refresh_token;
 }
-    return "";
-});
-
-$app->get('/start', function () use ($app) {
-    $urlDB = parse_url(getenv("CLEARDB_DATABASE_URL")); //Подключаемся к бд
-
-    $server = $urlDB["host"];
-    $username = $urlDB["user"];
-    $password = $urlDB["pass"];
-    $db = substr($urlDB["path"], 1);
-
-    $mysqli = new mysqli($server, $username, $password, $db); //Подключаемся
-
-    if ($mysqli->connect_error) {//проверка подключились ли мы
-        die('Ошибка подключения (' . $mysqli->connect_errno . ') ' . $mysqli->connect_error); //если нет выводим ошибку и выходим из кода
-    } else {
-        $mysqli->query("SET NAMES 'utf8'");//Устанавливаем кодировку
-
-        $mysqli->query("CREATE TABLE IF NOT EXISTS `active_state`(`active_time` BigInt( 255 ) NOT NULL, `isStart` TinyInt( 1 ) NOT NULL DEFAULT 1 ) ENGINE = InnoDB;");
-
-        $res = $mysqli->query("SELECT * from `active_state`");
-        $time = $res->fetch_assoc();
-
-        echo (time() * 1000) - $time['active_time'];
-
-    }
     return "";
 });
 
@@ -126,18 +97,23 @@ $app->post('/bot', function () use ($app) {
                 $text = explode(' ', $data->object->message->text);
 
                 //Проверяем массив слов
-                if (strtolower($text[0]) == '/info' || strtolower($text[0]) == '/инфо' || ($text[0] == '/') || ($text[0] == '/') || strtolower($text[0]) == '/инфа') {
+                if (strcasecmp($text[0], "/info") == 0 || strcasecmp($text[0], "/") == 0 || strcasecmp($text[0], "/инфо") == 0 || strcasecmp($text[0], "/инфа") == 0) {
                     $request_params['message'] = "&#129302;Music status for Vk by kos v1.0.0\n\n"
                         . "&#9999;Команды:\n"
-                        . "&#128196;/Info|Инфо - информация о проекте\n"
-                        . "&#9881;/start|начать {Токен Spotify} {Токен замены Spotify} {Ссылка с кодом VK} - подключение\n"
-                        . "&#127773;/on|включить - включает статус\n"
-                        . "&#127770;/off|выключить - выключает статус\n"
-                        . "&#127763;/set operation|включить операцию {off, start, on, finish} - включает определенную операцию статуса\n\n"
+                        . "&#128196;/Info|Инфо — информация о проекте\n"
+                        . "&#128190;/start|начать {Токен Spotify} {Токен замены Spotify} {Ссылка с кодом VK} — подключение\n"
+                        . "&#127773;/on|включить — включает статус\n"
+                        . "&#127770;/off|выключить — выключает статус\n"
+                        . "&#127763;/set operation|включить операцию {off, start, on, finish} — включает определенную операцию статуса\n"
+                        . "&#128241;/online|онлайн — показывает, когда был последний ответ от статус-сервера\n\n"
+                        . "&#9881;Настройки:\n"
+                        . "&#128247;/photo status|фото статус {on|off|включить|выключить} — Создает специальный альбом, в который будут добавляться обложки треков, которые вы сейчас слушаете\n"
+                        . "&#128221;/text|текст {on|off|включить|выключить} — Добавляет слово \"Слушает: \" перед статусом\n"
+                        . "&#128172;/limit|лимит {on|off|включить|выключить} — Если получившийся статус больше 140 символом, информация о альбоме не указывается\n\n"
                         . "&#10024;Операции статуса:\n"
-                        . "&#127761;off - резкое выключить статус (то что вы слушали останется в статусе)\n"
-                        . "&#127762;start - плавное включение (сохранение вашего текущего статуса и включение музыкального)\n"
-                        . "&#127765;on - резкое включение статуса (не сохраняет ваш статус)\n"
+                        . "&#127761;off — резкое выключить статус (то что вы слушали останется в статусе)\n"
+                        . "&#127762;start — плавное включение (сохранение вашего текущего статуса и включение музыкального)\n"
+                        . "&#127765;on — резкое включение статуса (не сохраняет ваш статус)\n"
                         . "&#127766;finish - плавное выключение статуса (возвращает ваш прежний статус)\n"
                         . "&#128204;p.s. Команды: /off|выключить и /on|включить плавно включают и выключают статус\n\n"
                         . "&#128214;Информация о проекте:\n"
@@ -145,7 +121,7 @@ $app->post('/bot', function () use ($app) {
                         . "&#128064;Исходные код проекта и гайд по подключению: https://github.com/kos234/music_status_vk\n"
                         . "&#129316;В разработке: вывод обложки трека в специальный альбом, подключение к YouTube и другим сервисам";
 
-                } elseif (strtolower($text[0]) == '/start' || strtolower($text[0]) == '/начать') {
+                } elseif (strcasecmp($text[0], '/start') == 0 || strcasecmp($text[0], '/начать') == 0) {
                     if (isset($text[1])){
                         if (isset($text[2])) {
                         if (isset($text[3])) {
@@ -168,7 +144,7 @@ $app->post('/bot', function () use ($app) {
                         }else $request_params['message'] = "&#10060;Вы не указали токен смены Spotify!";
                     } else $request_params['message'] = "&#10060;Вы не указали токен Spotify!";
 
-                } elseif (strtolower($text[0]) == '/on' || strtolower($text[0]) == '/включить') {
+                } elseif (strcasecmp($text[0], '/on') == 0 || strcasecmp($text[0], '/включить')  == 0) {
                     $res = $mysqli->query("SELECT * FROM `datasettings` WHERE `user_id` = '" . $data->object->message->from_id . "'");
                     $result = $res->fetch_assoc();
                     if (isset($result['user_id'])) {
@@ -178,7 +154,7 @@ $app->post('/bot', function () use ($app) {
                         $request_params['message'] = "&#127773;Включено!";
                     } else $request_params['message'] = "&#10060;Вы не привязаны к базе данных! Напишите /start|начать {Токен Spotify} {Токен замены Spotify} {Ссылка с кодом VK} для привязки!";
 
-                } elseif (($text[0] == '/off' || $text[0] == '/Off') || ($text[0] == '/выключить' || $text[0] == '/Выключить')) {
+                } elseif (strcasecmp($text[0], '/off') == 0 || strcasecmp($text[0], '/выключить') == 0) {
                     $res = $mysqli->query("SELECT * FROM `datasettings` WHERE `user_id` = '" . $data->object->message->from_id . "'");
                     $result = $res->fetch_assoc();
                     if (isset($result['user_id'])) {
@@ -188,26 +164,44 @@ $app->post('/bot', function () use ($app) {
                         $request_params['message'] = "&#127770;Выключено!";
                     } else $request_params['message'] = "&#10060;Вы не привязаны к базе данных! Напишите /start|начать {Токен Spotify} {Токен замены Spotify} {Ссылка с кодом VK} для привязки!";
 
-                }elseif(strtolower($text[0]) == '/faq'){
+                }elseif(strcasecmp($text[0], '/faq') == 0){
 
-                    $request_params['message'] = "Часто задаваемые вопросы:\n\n"
-                    . "Почему после включения или выключения статуса, он обновляется не сразу?\n"
-                    . "Статус всех пользователей обновляется поочерёден раз в 1 минуту. Когда вы выключаете или включаете статус, вы можете попасть в тот промежуток, когда приложение либо обрабатывает других пользователей, либо находится в ожидании 1 минуты.\n\n"
-                    . "Почему обновление происходит раз в 1 минуту?\n"
-                    . "Существует определённый лимит обращений к серверу ВКонтакте и если его превысить, то возможна блокировка вашего аккаунта. Прямо сейчас выясняется другое минимальное безопасное время обращений.\n\n"
-                    . "Какие ещё поддерживаются плееры?\n"
-                    . "Пока только Spotify, но в будущем будут и другие. Расскажите [id388061716|мне] поддержку каких плееров вы бы хотели видеть.\n\n"
-                    . "В гайде на GitHub'e у ВКонтакте какой-то странный фон, как такой сделать?\n"
-                    . "Расширение [2style|Vk Style]";
+                    $request_params['message'] = "https://vk.com/@music_status_for_vk-faq-chasto-zadavaemye-voprosy";
 
-                }elseif ((strtolower($text[0]) == "/лимит" || strtolower($text[0]) == "/limit")){
+                }elseif(strcasecmp($text[0], '/guide') == 0 || strcasecmp($text[0], '/гайд') == 0){
 
-                } elseif ((strtolower($text[0]) == '/set' || strtolower($text[0]) == '/включить') && (strtolower($text[1]) == 'operation' || strtolower($text[1]) == 'операцию')) {
+                    $request_params['message'] = "https://vk.com/@music_status_for_vk-gaid-po-podklucheniu";
+
+                }elseif(strcasecmp($text[0], '/online') == 0 || strcasecmp($text[0], '/онлайн') == 0){
+                    $res = $mysqli->query("SELECT `active_time` FROM `active_state`");
+                    $res_active = $res->fetch_assoc();
+                    $sec = time() - $res_active['active_time'];
+                    $type = "";
+                    if($sec <= 60){
+                        $type = " Всё хорошо&#9989;";
+                    }elseif (60 < $sec && $sec <= 120){
+                        $type = " Подозрительно&#128529;";
+                    }else{
+                        $type = " Сервер был перезагружен&#9851;";
+                    }
+                    $sec_padej = "";
+                    if(($sec >= 11 && $sec <= 19) || (endNumber($sec) >= 5 && endNumber($sec) <= 9) || endNumber($sec) == 0)
+                        $sec_padej = " секунд ";
+                    elseif (endNumber($sec) == 1)
+                        $sec_padej = " секунду ";
+                    elseif (endNumber($sec) >= 2 && endNumber($sec) <= 4)
+                        $sec_padej = " секунды ";
+
+                    $request_params['message'] = "Последний ответ был " . $sec . $sec_padej . "назад." . $type;
+
+                }elseif (strcasecmp($text[0], '/лимит') == 0 || strcasecmp($text[0], '/limit') == 0){
+
+                } elseif ((strcasecmp($text[0], '/set') == 0 || strcasecmp($text[0], '/включить') == 0) && (strcasecmp($text[1], 'operation') == 0 || strcasecmp($text[1], 'операцию') == 0)) {
                     if (isset($text[1])) {
                         $error = false;
                         $type = "";
                         $small = "";
-                        switch ($text[1]) {
+                        switch (strtolower($text[1])) {
                             case "off":
                                 $type = "off";
                                 $small = "&#127761;";
@@ -263,6 +257,10 @@ $app->post('/bot', function () use ($app) {
 
 
 $app->run();
+
+    function endNumber($number){
+        return (intdiv($number, 10) - $number/10) * 10;
+    }
 
     function sendPOST($request_params)
     {
