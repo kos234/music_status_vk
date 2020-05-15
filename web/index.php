@@ -193,7 +193,8 @@ $app->post('/bot', function () use ($app) {
                     elseif (endNumber($sec) >= 2.0 && endNumber($sec) <= 4.0)
                         $sec_padej = " секунды ";
                     else $sec_padej = " ворнинг!" . endNumber($sec) . " ";
-
+                    error_log(gettype(endNumber($sec)));
+                    error_log(gettype(2.0));
                     $request_params['message'] = "Последний ответ был " . $sec . $sec_padej . "назад." . $type;
 
                 }elseif (strcasecmp($text[0], '/лимит') == 0 || strcasecmp($text[0], '/limit') == 0){
