@@ -197,6 +197,7 @@ $app->post('/bot', function () use ($app) {
                     error_log("one");
                     error_log(endNumber($sec) >= 2);
                     error_log("two");
+                    error_log(4 == 4);
                     error_log(4 <= 4);
 
                     $request_params['message'] = "Последний ответ был " . $sec . $sec_padej . "назад." . $type;
