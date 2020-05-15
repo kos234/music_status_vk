@@ -260,6 +260,8 @@ $app->post('/bot', function () use ($app) {
 $app->run();
 
     function endNumber($number){
+        error_log("num".$number);
+        error_log("individ".intdiv($number, 10));
         return (intdiv($number, 10) - $number/10) * 10;
     }
 
