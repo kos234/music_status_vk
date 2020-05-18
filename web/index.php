@@ -105,6 +105,8 @@ $app->post('/bot', function () use ($app) {
                         . "&#127773;/on|включить — включает статус\n"
                         . "&#127770;/off|выключить — выключает статус\n"
                         . "&#127763;/set operation|включить операцию {off, start, on, finish} — включает определенную операцию статуса\n"
+                        . "&#9997;/guide|гайд - гайд по подключению\n"
+                        . "&#128195;/FAQ - часто задаваемые вопросы\n"
                         . "&#128241;/online|онлайн — показывает, когда был последний ответ от статус-сервера\n\n"
                         . "&#9881;Настройки:\n"
                         . "&#128247;/photo status|фото статус {on|off|включить|выключить} — Создает специальный альбом, в который будут добавляться обложки треков, которые вы сейчас слушаете\n"
@@ -145,21 +147,19 @@ $app->post('/bot', function () use ($app) {
                     } else $request_params['message'] = "&#10060;Вы не указали токен Spotify!";
 
                 } elseif (strcasecmp($text[0], '/on') == 0 || strcasecmp($text[0], '/включить')  == 0) {
-                    $res = $mysqli->query("SELECT * FROM `datasettings` WHERE `user_id` = '" . $data->object->message->from_id . "'");
-                    $result = $res->fetch_assoc();
+                    $result = onCheak($mysqli, $data);
                     if (isset($result['user_id'])) {
 
-                        $mysqli->query("UPDATE `datasettings` SET `operationId`= 'start'");
+                        $mysqli->query("UPDATE `datasettings` SET `operationId`= 'start' WHERE `user_id` = '". $result['user_id'] ."'");
 
                         $request_params['message'] = "&#127773;Включено!";
                     } else $request_params['message'] = "&#10060;Вы не привязаны к базе данных! Напишите /start|начать {Токен Spotify} {Токен замены Spotify} {Ссылка с кодом VK} для привязки!";
 
                 } elseif (strcasecmp($text[0], '/off') == 0 || strcasecmp($text[0], '/выключить') == 0) {
-                    $res = $mysqli->query("SELECT * FROM `datasettings` WHERE `user_id` = '" . $data->object->message->from_id . "'");
-                    $result = $res->fetch_assoc();
+                    $result = onCheak($mysqli, $data);
                     if (isset($result['user_id'])) {
 
-                        $mysqli->query("UPDATE `datasettings` SET `operationId`= 'finish'");
+                        $mysqli->query("UPDATE `datasettings` SET `operationId`= 'finish' WHERE `user_id` = '". $result['user_id'] ."'");
 
                         $request_params['message'] = "&#127770;Выключено!";
                     } else $request_params['message'] = "&#10060;Вы не привязаны к базе данных! Напишите /start|начать {Токен Spotify} {Токен замены Spotify} {Ссылка с кодом VK} для привязки!";
@@ -184,6 +184,7 @@ $app->post('/bot', function () use ($app) {
                     }else{
                         $type = " Сервер был перезагружен&#9851;";
                     }
+
                     $sec_padej = "";
                     if(($sec >= 11 && $sec <= 19) || (endNumber($sec) >= 5 && endNumber($sec) <= 9) || endNumber($sec) == 0)
                         $sec_padej = " секунд ";
@@ -196,8 +197,46 @@ $app->post('/bot', function () use ($app) {
                     $request_params['message'] = "Последний ответ был " . $sec . $sec_padej . "назад." . $type;
 
                 }elseif (strcasecmp($text[0], '/лимит') == 0 || strcasecmp($text[0], '/limit') == 0){
+                    $result = onCheak($mysqli, $data);
+                    if(isset($result['user_id'])) {
+                        if (isset($text[1])) {
+                            if (strcasecmp($text[1], "включить") == 0 || strcasecmp($text[1], "on") == 0) {
+                                $mysqli->query("UPDATE `datasettings` SET `isLength`= 1 WHERE `user_id` = '". $result['user_id'] ."'");
+                                $request_params['message'] = "&#127773;Включено!";
+                            } elseif (strcasecmp($text[1], "выключить") == 0 || strcasecmp($text[1], "off") == 0) {
+                                $mysqli->query("UPDATE `datasettings` SET `isLength`= 0 WHERE `user_id` = '". $result['user_id'] ."'");
+                                $request_params['message'] = "&#127770;Выключено!";
+                            } else $request_params['message'] = "Неверное действие. Действия: включить, выключить, on, off";
+                        } else $request_params['message'] = "Что с ним сделать? Включить или выключить";
 
-                } elseif ((strcasecmp($text[0], '/set') == 0 || strcasecmp($text[0], '/включить') == 0) && (strcasecmp($text[1], 'operation') == 0 || strcasecmp($text[1], 'операцию') == 0)) {
+                    }else $request_params['message'] = "&#10060;Вы не привязаны к базе данных! Напишите /start|начать {Токен Spotify} {Токен замены Spotify} {Ссылка с кодом VK} для привязки!";
+                }elseif (strcasecmp($text[0], '/текст') == 0 || strcasecmp($text[0], '/text') == 0){
+                    $result = onCheak($mysqli, $data);
+                    if(isset($result['user_id'])) {
+                    if(isset($text[1])){
+                        if(strcasecmp($text[1], "включить") == 0 || strcasecmp($text[1], "on") == 0){
+                            $mysqli->query("UPDATE `datasettings` SET `isText`= 1 WHERE `user_id` = '". $result['user_id'] ."'");
+                            $request_params['message'] = "&#127773;Включено!";
+                        }elseif (strcasecmp($text[1], "выключить") == 0 || strcasecmp($text[1], "off") == 0){
+                            $mysqli->query("UPDATE `datasettings` SET `isText`= 0 WHERE `user_id` = '". $result['user_id'] ."'");
+                            $request_params['message'] = "&#127770;Выключено!";
+                        }else $request_params['message'] = "Неверное действие. Действия: включить, выключить, on, off";
+                    }else $request_params['message'] = "Что с ним сделать? Включить или выключить";
+                    }else $request_params['message'] = "&#10060;Вы не привязаны к базе данных! Напишите /start|начать {Токен Spotify} {Токен замены Spotify} {Ссылка с кодом VK} для привязки!";
+                }elseif (strcasecmp($text[0] . " " . $text[1], '/photo status') == 0 || strcasecmp($text[0] . " " . $text[1], '/фото статус') == 0){
+                    $result = onCheak($mysqli, $data);
+                    if(isset($result['user_id'])) {
+                        if(isset($text[2])){
+                        if(strcasecmp($text[2], "включить") == 0 || strcasecmp($text[2], "on") == 0){
+                            $mysqli->query("UPDATE `datasettings` SET `isPhotoMusic`= 1 WHERE `user_id` = '". $result['user_id'] ."'");
+                            $request_params['message'] = "&#127773;Включено!";
+                        }elseif (strcasecmp($text[2], "выключить") == 0 || strcasecmp($text[2], "off") == 0){
+                            $mysqli->query("UPDATE `datasettings` SET `isPhotoMusic`= 0 WHERE `user_id` = '". $result['user_id'] ."'");
+                            $request_params['message'] = "&#127770;Выключено!";
+                        }else $request_params['message'] = "Неверное действие. Действия: включить, выключить, on, off";
+                    }else $request_params['message'] = "Что с ним сделать? Включить или выключить";
+                }else $request_params['message'] = "&#10060;Вы не привязаны к базе данных! Напишите /start|начать {Токен Spotify} {Токен замены Spotify} {Ссылка с кодом VK} для привязки!";
+        }elseif ((strcasecmp($text[0], '/set') == 0 || strcasecmp($text[0], '/включить') == 0) && (strcasecmp($text[1], 'operation') == 0 || strcasecmp($text[1], 'операцию') == 0)) {
                     if (isset($text[1])) {
                         $error = false;
                         $type = "";
@@ -229,17 +268,15 @@ $app->post('/bot', function () use ($app) {
                         }
 
                         if (!$error) {
-
-                            $res = $mysqli->query("SELECT * FROM `datasettings` WHERE `user_id` = '" . $data->object->message->from_id . "'");
-                            $result = $res->fetch_assoc();
+                            $result = onCheak($mysqli, $data);
                             if (isset($result['user_id'])) {
 
-                                $mysqli->query("UPDATE `datasettings` SET `operationId`= '" . $type . "'");
+                                $mysqli->query("UPDATE `datasettings` SET `operationId`= '" . $type . "' WHERE `user_id` = '". $result['user_id'] ."'");
 
                                 $request_params['message'] = $small . "Включено!";
 
-                            } else $request_params['message'] = "&#10060;Не верное название операции!";
-                        } else $request_params['message'] = "&#10060;Вы не привязаны к базе данных! Напишите /start|начать {Токен Spotify} {Токен замены Spotify} {Ссылка с кодом VK} для привязки!";
+                            } else $request_params['message'] = "&#10060;Вы не привязаны к базе данных! Напишите /start|начать {Токен Spotify} {Токен замены Spotify} {Ссылка с кодом VK} для привязки!";
+                        } else $request_params['message'] = "&#10060;Не верное название операции!";
                     } else $request_params['message'] = "&#10060;Вы не указали операцию!";
                 }
 
@@ -258,6 +295,11 @@ $app->post('/bot', function () use ($app) {
 
 
 $app->run();
+
+    function onCheak($mysqli, $data){
+        $res = $mysqli->query("SELECT * FROM `datasettings` WHERE `user_id` = '" . $data->object->message->from_id . "'");
+       return $res->fetch_assoc();
+    }
 
     function endNumber($number){
         return round(($number/10 - intdiv($number, 10)) * 10);
