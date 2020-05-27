@@ -177,9 +177,9 @@ $app->post('/bot', function () use ($app) {
                     $res_active = $res->fetch_assoc();
                     $sec = time() - $res_active['active_time'];
                     $type = "";
-                    if($sec <= 60){
+                    if($sec <= 30){
                         $type = " Всё хорошо&#9989;";
-                    }elseif (60 < $sec && $sec <= 120){
+                    }elseif (30 < $sec && $sec <= 60){
                         $type = " Подозрительно&#128529;";
                     }else{
                         $type = " Сервер был перезагружен&#9851;";
