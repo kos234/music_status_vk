@@ -39,7 +39,7 @@ $app->get('/getDBConf', function () use ($app) {//Если нужно узнат
         $password = $urlDB["pass"];
         $db = substr($urlDB["path"], 1);
         echo $server. " <- сервер <br>".$username." <- имя пользователя <br>".$password." <- пароль <br>".$db." <- база данных <br>";
-    }else echo "Неверный пароль! Ану брысь!";}
+    }}
      return '';
 });
 
@@ -97,7 +97,7 @@ $app->post('/bot', function () use ($app) {
                 $text = explode(' ', $data->object->message->text);
 
                 //Проверяем массив слов
-                if (strcasecmp($text[0], "/info") == 0 || strcasecmp($text[0], "/") == 0 || strcasecmp($text[0], "/инфо") == 0 || strcasecmp($text[0], "/инфа") == 0) {
+                if (mb_strcasecmp($text[0], "/info") == 0 || mb_strcasecmp($text[0], "/") == 0 || mb_strcasecmp($text[0], "/инфо") == 0 || mb_strcasecmp($text[0], "/инфа") == 0) {
                     $request_params['message'] = "&#129302;Music status for Vk by kos v1.0.0\n\n"
                         . "&#9999;Команды:\n"
                         . "&#128196;/Info|Инфо — информация о проекте\n"
@@ -110,8 +110,10 @@ $app->post('/bot', function () use ($app) {
                         . "&#128241;/online|онлайн — показывает, когда был последний ответ от статус-сервера\n\n"
                         . "&#9881;Настройки:\n"
                         . "&#128247;/photo status|фото статус {on|off|включить|выключить} — Создает специальный альбом, в который будут добавляться обложки треков, которые вы сейчас слушаете\n"
-                        . "&#128221;/text|текст {on|off|включить|выключить} — Добавляет слово \"Слушает: \" перед статусом\n"
-                        . "&#128172;/limit|лимит {on|off|включить|выключить} — Если получившийся статус больше 140 символом, информация о альбоме не указывается\n\n"
+                        . "&#128221;/text|текст {on|off|включить|выключить} — Добавляет слово \"Слушает: \" перед статусом, по умолчанию включено\n"
+                        . "&#128221;/pause|пауза {on|off|включить|выключить} — Добавляет фразу \"На паузе: \" если вы поставили трек на паузу, по умолчанию отключено\n"
+                        . "&#128221;/stop|стоп {on|off|включить|выключить} — Добавляет слово \"Слушал: \" если вы прекратили слушать музыку, по умолчанию отключено\n"
+                        . "&#128172;/limit|лимит {on|off|включить|выключить} — Если получившийся статус больше 140 символом, информация о альбоме не указывается, по умолчанию отключено\n\n"
                         . "&#10024;Операции статуса:\n"
                         . "&#127761;off — резкое выключить статус (то что вы слушали останется в статусе)\n"
                         . "&#127762;start — плавное включение (сохранение вашего текущего статуса и включение музыкального)\n"
@@ -123,7 +125,7 @@ $app->post('/bot', function () use ($app) {
                         . "&#128064;Исходные код проекта и гайд по подключению: https://github.com/kos234/music_status_vk\n"
                         . "&#129316;В разработке: вывод обложки трека в специальный альбом, подключение к YouTube и другим сервисам";
 
-                } elseif (strcasecmp($text[0], '/start') == 0 || strcasecmp($text[0], '/начать') == 0) {
+                } elseif (mb_strcasecmp($text[0], '/start') == 0 || mb_strcasecmp($text[0], '/начать') == 0) {
                     if (isset($text[1])){
                         if (isset($text[2])) {
                         if (isset($text[3])) {
@@ -146,7 +148,7 @@ $app->post('/bot', function () use ($app) {
                         }else $request_params['message'] = "&#10060;Вы не указали токен смены Spotify!";
                     } else $request_params['message'] = "&#10060;Вы не указали токен Spotify!";
 
-                } elseif (strcasecmp($text[0], '/on') == 0 || strcasecmp($text[0], '/включить')  == 0) {
+                } elseif (mb_strcasecmp($text[0], '/on') == 0 || mb_strcasecmp($text[0], '/включить')  == 0) {
                     $result = onCheak($mysqli, $data);
                     if (isset($result['user_id'])) {
 
@@ -155,7 +157,7 @@ $app->post('/bot', function () use ($app) {
                         $request_params['message'] = "&#127773;Включено!";
                     } else $request_params['message'] = "&#10060;Вы не привязаны к базе данных! Напишите /start|начать {Токен Spotify} {Токен замены Spotify} {Ссылка с кодом VK} для привязки!";
 
-                } elseif (strcasecmp($text[0], '/off') == 0 || strcasecmp($text[0], '/выключить') == 0) {
+                } elseif (mb_strcasecmp($text[0], '/off') == 0 || mb_strcasecmp($text[0], '/выключить') == 0) {
                     $result = onCheak($mysqli, $data);
                     if (isset($result['user_id'])) {
 
@@ -164,15 +166,15 @@ $app->post('/bot', function () use ($app) {
                         $request_params['message'] = "&#127770;Выключено!";
                     } else $request_params['message'] = "&#10060;Вы не привязаны к базе данных! Напишите /start|начать {Токен Spotify} {Токен замены Spotify} {Ссылка с кодом VK} для привязки!";
 
-                }elseif(strcasecmp($text[0], '/faq') == 0){
+                }elseif(mb_strcasecmp($text[0], '/faq') == 0){
 
                     $request_params['message'] = "https://vk.com/@music_status_for_vk-faq-chasto-zadavaemye-voprosy";
 
-                }elseif(strcasecmp($text[0], '/guide') == 0 || strcasecmp($text[0], '/гайд') == 0){
+                }elseif(mb_strcasecmp($text[0], '/guide') == 0 || mb_strcasecmp($text[0], '/гайд') == 0){
 
                     $request_params['message'] = "https://vk.com/@music_status_for_vk-gaid-po-podklucheniu";
 
-                }elseif(strcasecmp($text[0], '/online') == 0 || strcasecmp($text[0], '/онлайн') == 0){
+                }elseif(mb_strcasecmp($text[0], '/online') == 0 || mb_strcasecmp($text[0], '/онлайн') == 0){
                     $res = $mysqli->query("SELECT `active_time` FROM `active_state`");
                     $res_active = $res->fetch_assoc();
                     $sec = time() - $res_active['active_time'];
@@ -196,47 +198,73 @@ $app->post('/bot', function () use ($app) {
 
                     $request_params['message'] = "Последний ответ был " . $sec . $sec_padej . "назад." . $type;
 
-                }elseif (strcasecmp($text[0], '/лимит') == 0 || strcasecmp($text[0], '/limit') == 0){
+                }elseif (mb_strcasecmp($text[0], '/лимит') == 0 || mb_strcasecmp($text[0], '/limit') == 0){
                     $result = onCheak($mysqli, $data);
                     if(isset($result['user_id'])) {
                         if (isset($text[1])) {
-                            if (strcasecmp($text[1], "включить") == 0 || strcasecmp($text[1], "on") == 0) {
+                            if (mb_strcasecmp($text[1], "включить") == 0 || mb_strcasecmp($text[1], "on") == 0) {
                                 $mysqli->query("UPDATE `datasettings` SET `isLength`= 1 WHERE `user_id` = '". $result['user_id'] ."'");
                                 $request_params['message'] = "&#127773;Включено!";
-                            } elseif (strcasecmp($text[1], "выключить") == 0 || strcasecmp($text[1], "off") == 0) {
+                            } elseif (mb_strcasecmp($text[1], "выключить") == 0 || mb_strcasecmp($text[1], "off") == 0) {
                                 $mysqli->query("UPDATE `datasettings` SET `isLength`= 0 WHERE `user_id` = '". $result['user_id'] ."'");
                                 $request_params['message'] = "&#127770;Выключено!";
                             } else $request_params['message'] = "Неверное действие. Действия: включить, выключить, on, off";
                         } else $request_params['message'] = "Что с ним сделать? Включить или выключить";
 
                     }else $request_params['message'] = "&#10060;Вы не привязаны к базе данных! Напишите /start|начать {Токен Spotify} {Токен замены Spotify} {Ссылка с кодом VK} для привязки!";
-                }elseif (strcasecmp($text[0], '/текст') == 0 || strcasecmp($text[0], '/text') == 0){
+                }elseif (mb_strcasecmp($text[0], '/текст') == 0 || mb_strcasecmp($text[0], '/text') == 0){
                     $result = onCheak($mysqli, $data);
                     if(isset($result['user_id'])) {
                     if(isset($text[1])){
-                        if(strcasecmp($text[1], "включить") == 0 || strcasecmp($text[1], "on") == 0){
-                            $mysqli->query("UPDATE `datasettings` SET `isText`= 1 WHERE `user_id` = '". $result['user_id'] ."'");
+                        if(mb_strcasecmp($text[1], "включить") == 0 || mb_strcasecmp($text[1], "on") == 0){
+                            $mysqli->query("UPDATE `datasettings` SET `icText`= 1 WHERE `user_id` = '". $result['user_id'] ."'");
                             $request_params['message'] = "&#127773;Включено!";
-                        }elseif (strcasecmp($text[1], "выключить") == 0 || strcasecmp($text[1], "off") == 0){
-                            $mysqli->query("UPDATE `datasettings` SET `isText`= 0 WHERE `user_id` = '". $result['user_id'] ."'");
+                        }elseif (mb_strcasecmp($text[1], "выключить") == 0 || mb_strcasecmp($text[1], "off") == 0){
+                            $mysqli->query("UPDATE `datasettings` SET `icText`= 0 WHERE `user_id` = '". $result['user_id'] ."'");
                             $request_params['message'] = "&#127770;Выключено!";
                         }else $request_params['message'] = "Неверное действие. Действия: включить, выключить, on, off";
                     }else $request_params['message'] = "Что с ним сделать? Включить или выключить";
                     }else $request_params['message'] = "&#10060;Вы не привязаны к базе данных! Напишите /start|начать {Токен Spotify} {Токен замены Spotify} {Ссылка с кодом VK} для привязки!";
-                }elseif (strcasecmp($text[0] . " " . $text[1], '/photo status') == 0 || strcasecmp($text[0] . " " . $text[1], '/фото статус') == 0){
+                }elseif (mb_strcasecmp($text[0], '/пауза') == 0 || mb_strcasecmp($text[0], '/pause') == 0){
+                    $result = onCheak($mysqli, $data);
+                    if(isset($result['user_id'])) {
+                    if(isset($text[1])){
+                        if(mb_strcasecmp($text[1], "включить") == 0 || mb_strcasecmp($text[1], "on") == 0){
+                            $mysqli->query("UPDATE `datasettings` SET `icPause`= 1 WHERE `user_id` = '". $result['user_id'] ."'");
+                            $request_params['message'] = "&#127773;Включено!";
+                        }elseif (mb_strcasecmp($text[1], "выключить") == 0 || mb_strcasecmp($text[1], "off") == 0){
+                            $mysqli->query("UPDATE `datasettings` SET `icPause`= 0 WHERE `user_id` = '". $result['user_id'] ."'");
+                            $request_params['message'] = "&#127770;Выключено!";
+                        }else $request_params['message'] = "Неверное действие. Действия: включить, выключить, on, off";
+                    }else $request_params['message'] = "Что с ним сделать? Включить или выключить";
+                    }else $request_params['message'] = "&#10060;Вы не привязаны к базе данных! Напишите /start|начать {Токен Spotify} {Токен замены Spotify} {Ссылка с кодом VK} для привязки!";
+                }elseif (mb_strcasecmp($text[0], '/stop') == 0 || mb_strcasecmp($text[0], '/стоп') == 0){
+                    $result = onCheak($mysqli, $data);
+                    if(isset($result['user_id'])) {
+                    if(isset($text[1])){
+                        if(mb_strcasecmp($text[1], "включить") == 0 || mb_strcasecmp($text[1], "on") == 0){
+                            $mysqli->query("UPDATE `datasettings` SET `icStop`= 1 WHERE `user_id` = '". $result['user_id'] ."'");
+                            $request_params['message'] = "&#127773;Включено!";
+                        }elseif (mb_strcasecmp($text[1], "выключить") == 0 || mb_strcasecmp($text[1], "off") == 0){
+                            $mysqli->query("UPDATE `datasettings` SET `icStop`= 0 WHERE `user_id` = '". $result['user_id'] ."'");
+                            $request_params['message'] = "&#127770;Выключено!";
+                        }else $request_params['message'] = "Неверное действие. Действия: включить, выключить, on, off";
+                    }else $request_params['message'] = "Что с ним сделать? Включить или выключить";
+                    }else $request_params['message'] = "&#10060;Вы не привязаны к базе данных! Напишите /start|начать {Токен Spotify} {Токен замены Spotify} {Ссылка с кодом VK} для привязки!";
+                }elseif (mb_strcasecmp($text[0] . " " . $text[1], '/photo status') == 0 || mb_strcasecmp($text[0] . " " . $text[1], '/фото статус') == 0){
                     $result = onCheak($mysqli, $data);
                     if(isset($result['user_id'])) {
                         if(isset($text[2])){
-                        if(strcasecmp($text[2], "включить") == 0 || strcasecmp($text[2], "on") == 0){
-                            $mysqli->query("UPDATE `datasettings` SET `isPhotoMusic`= 1 WHERE `user_id` = '". $result['user_id'] ."'");
+                        if(mb_strcasecmp($text[2], "включить") == 0 || mb_strcasecmp($text[2], "on") == 0){
+                            $mysqli->query("UPDATE `datasettings` SET `icPhotoMusic`= 1 WHERE `user_id` = '". $result['user_id'] ."'");
                             $request_params['message'] = "&#127773;Включено!";
-                        }elseif (strcasecmp($text[2], "выключить") == 0 || strcasecmp($text[2], "off") == 0){
-                            $mysqli->query("UPDATE `datasettings` SET `isPhotoMusic`= 0 WHERE `user_id` = '". $result['user_id'] ."'");
+                        }elseif (mb_strcasecmp($text[2], "выключить") == 0 || mb_strcasecmp($text[2], "off") == 0){
+                            $mysqli->query("UPDATE `datasettings` SET `icPhotoMusic`= 0 WHERE `user_id` = '". $result['user_id'] ."'");
                             $request_params['message'] = "&#127770;Выключено!";
                         }else $request_params['message'] = "Неверное действие. Действия: включить, выключить, on, off";
                     }else $request_params['message'] = "Что с ним сделать? Включить или выключить";
                 }else $request_params['message'] = "&#10060;Вы не привязаны к базе данных! Напишите /start|начать {Токен Spotify} {Токен замены Spotify} {Ссылка с кодом VK} для привязки!";
-        }elseif ((strcasecmp($text[0], '/set') == 0 || strcasecmp($text[0], '/включить') == 0) && (strcasecmp($text[1], 'operation') == 0 || strcasecmp($text[1], 'операцию') == 0)) {
+        }elseif ((mb_strcasecmp($text[0], '/set') == 0 || mb_strcasecmp($text[0], '/включить') == 0) && (mb_strcasecmp($text[1], 'operation') == 0 || mb_strcasecmp($text[1], 'операцию') == 0)) {
                     if (isset($text[1])) {
                         $error = false;
                         $type = "";
@@ -295,6 +323,11 @@ $app->post('/bot', function () use ($app) {
 
 
 $app->run();
+
+function mb_strcasecmp($str1, $str2, $encoding = null) { //https://www.php.net/manual/en/function.mb_strcasecmp.php#107016 взято от сюда
+    if (null === $encoding) { $encoding = mb_internal_encoding(); }
+    return strcmp(mb_strtoupper($str1, $encoding), mb_strtoupper($str2, $encoding));
+}
 
     function onCheak($mysqli, $data){
         $res = $mysqli->query("SELECT * FROM `datasettings` WHERE `user_id` = '" . $data->object->message->from_id . "'");
