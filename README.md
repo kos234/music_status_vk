@@ -22,4 +22,4 @@ Click on the [link](https://vk.com/im?sel=-194913413) and write the bot the comm
 
 Перейдите по [ссылке](https://vk.com/im?sel=-194913413) и напишите боту команду `/начать {токен Spotify} {токен смены Spotify} {ссылка полученная на втором шаге}`
 
-#####To find out the functions status, write `/info` or `/` to the bot / Чтобы узнать возможно статуса напишите `/инфо(а)` или `/` боту
+##### To find out the functions status, write `/info` or `/` to the bot / Чтобы узнать возможно статуса напишите `/инфо(а)` или `/` боту
