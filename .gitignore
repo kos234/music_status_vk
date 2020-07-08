@@ -1,3 +1,4 @@
 vendor/
 .env
 .idea
+music-status-java/src/main/java/progs/kos/Const.java

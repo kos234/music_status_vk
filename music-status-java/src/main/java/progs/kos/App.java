@@ -20,6 +20,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.sql.*;
 import java.util.Base64;
 import java.util.Properties;
@@ -167,19 +168,20 @@ public class App extends Const{
 
             track = artists + " — " + music.get("name") + album;
 
+            System.out.println(track);
+
             if (infoUser.getInt("icText") == 1){
                 statusTrack = "Слушает: " + artists + " — " + music.get("name") + album;
-                if(statusTrack.length() >= 140 && infoUser.getInt("isLength") == 1){
+                if(statusTrack.length() >= 140 && infoUser.getInt("icLength") == 1){
                     statusTrack = "Слушает: " + artists + " — " +  music.get("name");
                 }
             }else{
                 statusTrack = track;
-                if(statusTrack.length() >= 140 && infoUser.getInt("isLength") == 1){
+                if(statusTrack.length() >= 140 && infoUser.getInt("icLength") == 1){
                     statusTrack = artists + " — " +  music.get("name");
                 }
             }
-            String cheakSleep = vk.status().get(actor).userId(actor.getId()).execute().getText().split(":")[0];
-            boolean icSleep = cheakSleep.equals("На паузе") || cheakSleep.equals("Слушал");
+            boolean icSleep = infoUser.getString("lastTrack").equals("sleep");
 
             if(!track.equals(infoUser.getString("lastTrack").replace("@", "'")) || icSleep) {
                 vk.status().set(actor).text(statusTrack).execute();
@@ -191,7 +193,8 @@ public class App extends Const{
                     MySQL.prepareStatement("UPDATE dataSettings set lastTrack = \'" + track.toString().replace("'", "@") + "\' WHERE user_id = " + actor.getId()).execute();
                 }
 
-                if(infoUser.getInt("icPhotoMusic") == 1 && icSleep){
+                if(infoUser.getInt("icPhotoMusic") == 1 && !icSleep){
+                    System.out.println("photo");
                     JSONArray urls = albumJSON.getJSONArray("images");
                     JSONObject urlPhoto =  urls.getJSONObject(0);
                     if(infoUser.getInt("albumForPhotoMusic") == 0){
@@ -233,10 +236,22 @@ public class App extends Const{
             //Сон Sleep
             try {
                 if(!infoUser.getString("lastTrack").equals("")) {
-                    if (e.getMessage().equals("1") && !vk.status().get(actor).userId(actor.getId()).execute().getText().equals("На паузе: " + infoUser.getString("lastTrack"))) {
-                        vk.status().set(actor).text("На паузе: " + infoUser.getString("lastTrack")).execute();
-                    } else if (infoUser.getInt("icStop") == 1 && !vk.status().get(actor).userId(actor.getId()).execute().getText().equals("Слушал: " + infoUser.getString("lastTrack"))) {
-                        vk.status().set(actor).text("Слушал: " + infoUser.getString("lastTrack")).execute();
+                    String message = "";
+                    if(e.getMessage() != null)
+                        message = e.getMessage();
+                    if (message.equals("") && infoUser.getInt("icStop") == 1) {
+                        if(!infoUser.getString("lastTrack").equals("sleep")) {
+                            if (infoUser.getInt("icText") == 1)
+                                vk.status().set(actor).text("Слушал: " + infoUser.getString("lastTrack")).execute();
+                            else vk.status().set(actor).text(infoUser.getString("lastTrack")).execute();
+                            MySQL.prepareStatement("UPDATE dataSettings set lastTrack = \'sleep\' WHERE user_id = " + actor.getId()).execute();
+                        }
+                    }else if (message.equals("1"))
+                        if(!infoUser.getString("lastTrack").equals("sleep")) {
+                            if (infoUser.getInt("icText") == 1)
+                                vk.status().set(actor).text("На паузе: " + infoUser.getString("lastTrack")).execute();
+                            else vk.status().set(actor).text(infoUser.getString("lastTrack")).execute();
+                            MySQL.prepareStatement("UPDATE dataSettings set lastTrack = \'sleep\' WHERE user_id = " + actor.getId()).execute();
                     } else {
                         vk.status().set(actor).text(infoUser.getString("lastStatus")).execute();
                         if (infoUser.getInt("icPhotoMusic") == 1) {
@@ -275,8 +290,6 @@ public class App extends Const{
 
     public static void photoStatus(int album_id, VkApiClient vk, UserActor actor, String track, Connection MySQL, String photoUrl) throws SQLException, ClientException, ApiException {
         try {
-
-
             File photo = File.createTempFile("photo", ".jpg");
             if(!photo.exists()) {
                 //Создаем его.
@@ -338,16 +351,14 @@ public class App extends Const{
         connection.setConnectTimeout(15000);
         connection.connect();
 
-        InputStream in = new BufferedInputStream(connection.getInputStream());
-        BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8));
         StringBuilder result = new StringBuilder();
         String line;
         while ((line = reader.readLine()) != null) {
             result.append(line);
         }
 
-        JSONObject json = JSON.parseObject(result.toString());
-        return json;
+        return JSON.parseObject(result.toString());
     }
 
     public static Connection connection (String url, String user, String password) throws SQLException {
@@ -355,7 +366,7 @@ public class App extends Const{
         MySQL.prepareStatement("SET NAMES 'utf8'").execute();
         MySQL.prepareStatement("SET CHARACTER SET utf8mb4;").execute();
         MySQL.prepareStatement("CREATE TABLE IF NOT EXISTS `active_state`(`active_time` BigInt( 255 ) NOT NULL, `isStart` TinyInt( 1 ) NOT NULL DEFAULT 1 ) ENGINE = InnoDB;").execute();
-        MySQL.prepareStatement("CREATE TABLE IF NOT EXISTS `dataSettings` (`operationId` VarChar( 255 ) NOT NULL DEFAULT 'off',`isLength` TinyInt( 1 ) NOT NULL DEFAULT 1 ,`icText` TinyInt( 1 ) NOT NULL DEFAULT 1 ,`lastStatus` VarChar( 255 ) NULL,`refreshTokenSpotify` VarChar( 400 ) NOT NULL, `tokenSpotify` VarChar( 400 ) NOT NULL,`lastTrack` VarChar( 400 ) NULL, `icPhotoMusic` TinyInt( 1 ) NOT NULL DEFAULT 0, `albumForPhotoMusic` Int( 255 ) NOT NULL DEFAULT 0, `user_id` INT ( 255 ) NOT NULL, CONSTRAINT `unique_user_id` UNIQUE( `user_id` ), `tokenVK` VarChar( 255 ) NOT NULL) ENGINE = InnoDB;").execute();
+        MySQL.prepareStatement("CREATE TABLE IF NOT EXISTS `dataSettings` (`operationId` VarChar( 255 ) NOT NULL DEFAULT 'off',`icLength` TinyInt( 1 ) NOT NULL DEFAULT 1, `icPause` TinyInt( 1 ) NOT NULL DEFAULT 1, `icStop` TinyInt( 1 ) NOT NULL DEFAULT 0 ,`icText` TinyInt( 1 ) NOT NULL DEFAULT 1 ,`lastStatus` VarChar( 255 ) NULL,`refreshTokenSpotify` VarChar( 400 ) NOT NULL, `tokenSpotify` VarChar( 400 ) NOT NULL,`lastTrack` VarChar( 400 ) NULL, `icPhotoMusic` TinyInt( 1 ) NOT NULL DEFAULT 0, `albumForPhotoMusic` Int( 255 ) NOT NULL DEFAULT 0, `user_id` INT ( 255 ) NOT NULL, CONSTRAINT `unique_user_id` UNIQUE( `user_id` ), `tokenVK` VarChar( 255 ) NOT NULL) ENGINE = InnoDB;").execute();
         return MySQL;
     }
 }
