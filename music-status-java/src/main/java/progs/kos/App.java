@@ -3,6 +3,7 @@ package progs.kos;
 import com.alibaba.fastjson.*;
 import com.mysql.cj.jdbc.exceptions.SQLError;
 import com.vk.api.sdk.exceptions.ApiParamException;
+import com.vk.api.sdk.objects.photos.Photo;
 import com.vk.api.sdk.objects.photos.PhotoAlbumFull;
 import com.vk.api.sdk.objects.photos.PhotoUpload;
 import com.vk.api.sdk.objects.photos.responses.PhotoUploadResponse;
@@ -23,6 +24,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.sql.*;
 import java.util.Base64;
+import java.util.List;
 import java.util.Properties;
 
 import static java.lang.Runtime.getRuntime;
@@ -138,7 +140,9 @@ public class App extends Const{
     }
 
     public static void on(String tokenSpotify, String refreshTokenSpotify, String authorizationSpotify, Connection MySQL, VkApiClient vk, UserActor actor, int TIME_SLEEP, ResultSet infoUser) throws InterruptedException, SQLException, IOException {
+        boolean icSleep = false;
         try {
+            icSleep = infoUser.getString("lastTrack").split("%%%").length == 2;
             JSONObject musicFullJson = getRequestJSON(new URL("https://api.spotify.com/v1/me/player/currently-playing?access_token=" + tokenSpotify));
             if(!(boolean)musicFullJson.get("is_playing"))
                 throw new NullPointerException(String.valueOf(infoUser.getInt("icText")));
@@ -181,9 +185,10 @@ public class App extends Const{
                     statusTrack = artists + " — " +  music.get("name");
                 }
             }
-            boolean icSleep = infoUser.getString("lastTrack").equals("sleep");
 
-            if(!track.equals(infoUser.getString("lastTrack").replace("@", "'")) || icSleep) {
+            boolean icLastTrack = track.equals(infoUser.getString("lastTrack").split("%%%")[0].replace("@", "'"));
+
+            if(!icLastTrack || icSleep) {
                 vk.status().set(actor).text(statusTrack).execute();
                 try {
                     MySQL.prepareStatement("UPDATE dataSettings set lastTrack = \'" + track.toString().replace("'", "@") + "\' WHERE user_id = " + actor.getId()).execute();
@@ -193,7 +198,7 @@ public class App extends Const{
                     MySQL.prepareStatement("UPDATE dataSettings set lastTrack = \'" + track.toString().replace("'", "@") + "\' WHERE user_id = " + actor.getId()).execute();
                 }
 
-                if(infoUser.getInt("icPhotoMusic") == 1 && !icSleep){
+                if(infoUser.getInt("icPhotoMusic") == 1 && (!icSleep || !icLastTrack)){
                     System.out.println("photo");
                     JSONArray urls = albumJSON.getJSONArray("images");
                     JSONObject urlPhoto =  urls.getJSONObject(0);
@@ -221,7 +226,6 @@ public class App extends Const{
             while ((line = reader.readLine()) != null) {
                 result.append(line);
             }
-            System.out.print(result.toString());
             JSONObject json = JSON.parseObject(result.toString());
 
             try {
@@ -240,18 +244,18 @@ public class App extends Const{
                     if(e.getMessage() != null)
                         message = e.getMessage();
                     if (message.equals("") && infoUser.getInt("icStop") == 1) {
-                        if(!infoUser.getString("lastTrack").equals("sleep")) {
+                        if(!icSleep) {
                             if (infoUser.getInt("icText") == 1)
                                 vk.status().set(actor).text("Слушал: " + infoUser.getString("lastTrack")).execute();
-                            else vk.status().set(actor).text(infoUser.getString("lastTrack")).execute();
-                            MySQL.prepareStatement("UPDATE dataSettings set lastTrack = \'sleep\' WHERE user_id = " + actor.getId()).execute();
+                            else vk.status().set(actor).text(infoUser.getString("lastTrack").replace("@", "'")).execute();
+                            MySQL.prepareStatement("UPDATE dataSettings set lastTrack = \'" + infoUser.getString("lastTrack") + "%%%sleep\' WHERE user_id = " + actor.getId()).execute();
                         }
                     }else if (message.equals("1"))
-                        if(!infoUser.getString("lastTrack").equals("sleep")) {
+                        if(!icSleep) {
                             if (infoUser.getInt("icText") == 1)
                                 vk.status().set(actor).text("На паузе: " + infoUser.getString("lastTrack")).execute();
-                            else vk.status().set(actor).text(infoUser.getString("lastTrack")).execute();
-                            MySQL.prepareStatement("UPDATE dataSettings set lastTrack = \'sleep\' WHERE user_id = " + actor.getId()).execute();
+                            else vk.status().set(actor).text(infoUser.getString("lastTrack").replace("@", "'")).execute();
+                            MySQL.prepareStatement("UPDATE dataSettings set lastTrack = \'" + infoUser.getString("lastTrack") + "%%%sleep\' WHERE user_id = " + actor.getId()).execute();
                     } else {
                         vk.status().set(actor).text(infoUser.getString("lastStatus")).execute();
                         if (infoUser.getInt("icPhotoMusic") == 1) {
@@ -314,9 +318,11 @@ public class App extends Const{
             in.close();
 
             PhotoUpload photoUpload = vk.photos().getUploadServer(actor).albumId(album_id).execute();
-
+            System.out.println(photoUpload.toString());
             PhotoUploadResponse photoUploadResponse = vk.upload().photo(photoUpload.getUploadUrl(), photo).execute();
-            vk.photos().save(actor).server(photoUploadResponse.getServer()).photosList(photoUploadResponse.getPhotosList()).hash(photoUploadResponse.getHash()).albumId(album_id).caption(track).execute();
+            System.out.println(photoUploadResponse.toString());
+            List<Photo> photoList = vk.photos().save(actor).server(photoUploadResponse.getServer()).photosList(photoUploadResponse.getPhotosList()).hash(photoUploadResponse.getHash()).albumId(album_id).caption(track).execute();
+            System.out.println(photoList.toString());
             photo.deleteOnExit();
         } catch (ApiException e) {
             e.printStackTrace();
