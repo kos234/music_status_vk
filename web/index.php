@@ -129,6 +129,7 @@ $app->post('/bot', function () use ($app) {
                     if (isset($text[1])){
                         if (isset($text[2])) {
                         if (isset($text[3])) {
+                            if(!(strpos($text[2], "{") != false || strpos($text[3], "{") != false || strpos($text[2], "}") != false || strpos($text[3], "}") != false)){
 
                             $explodeUrl = explode("code=",  $text[3]);
                             if(isset($explodeUrl[1])){
@@ -144,6 +145,7 @@ $app->post('/bot', function () use ($app) {
                                 $request_params['message'] = "&#9989;Настройка завершена, теперь напишите /on|включить чтобы начать использование!";
                             }else $request_params['message'] = "&#10060;Что-то не так с ссылкой, попробуйте ещё раз! Нерабочий код!";
                             }else $request_params['message'] = "&#10060;Что-то не так с ссылкой, попробуйте ещё раз! Нет кода!";
+                            }else $request_params['message'] = "&#10060;Указывать значения необходимо без фигурных скобок!";
                         }else $request_params['message'] = "&#10060;Вы не указали ссылку с кодом VK!";
                         }else $request_params['message'] = "&#10060;Вы не указали токен смены Spotify!";
                     } else $request_params['message'] = "&#10060;Вы не указали токен Spotify!";
