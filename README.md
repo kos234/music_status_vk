@@ -1,8 +1,7 @@
 # Music status for vk / Музыкальный статус для вк
 
 ![preview](preview.gif)
-### Created using the library / Создано с использованием библиотеки: [php-getting-started](https://github.com/heroku/php-getting-started)
-
+### Created using the libraries' / Создано с использованием библиотек: [php-getting-started](https://github.com/heroku/php-getting-started), [vk-php-sdk](https://github.com/VKCOM/vk-php-sdk)
 ## Connection / Подключение
 ### Step one: getting a spotify token / Шаг первый: получение токена Spotify
 

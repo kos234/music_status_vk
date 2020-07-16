@@ -337,7 +337,7 @@ public class App extends Const{
         mysqlQuery(MySQL, "SET NAMES 'utf8'");
         mysqlQuery(MySQL, "SET CHARACTER SET utf8mb4;");
         mysqlQuery(MySQL, "CREATE TABLE IF NOT EXISTS `active_state`(`active_time` BigInt( 255 ) NOT NULL, `isStart` TinyInt( 1 ) NOT NULL DEFAULT 1 ) ENGINE = InnoDB;");
-        mysqlQuery(MySQL, "CREATE TABLE IF NOT EXISTS `dataSettings` (`operationId` VarChar( 255 ) NOT NULL DEFAULT 'off',`icLength` TinyInt( 1 ) NOT NULL DEFAULT 1, `icPause` TinyInt( 1 ) NOT NULL DEFAULT 1, `icStop` TinyInt( 1 ) NOT NULL DEFAULT 0 ,`icText` TinyInt( 1 ) NOT NULL DEFAULT 1 ,`lastStatus` VarChar( 255 ) NULL,`refreshTokenSpotify` VarChar( 400 ) NOT NULL, `tokenSpotify` VarChar( 400 ) NOT NULL,`lastTrack` VarChar( 400 ) NULL, `icPhotoMusic` TinyInt( 1 ) NOT NULL DEFAULT 0, `albumForPhotoMusic` Int( 255 ) NOT NULL DEFAULT 0, `user_id` INT ( 255 ) NOT NULL, CONSTRAINT `unique_user_id` UNIQUE( `user_id` ), `tokenVK` VarChar( 255 ) NOT NULL) ENGINE = InnoDB;");
+        mysqlQuery(MySQL, "CREATE TABLE IF NOT EXISTS `dataSettings` (`operationId` VarChar( 255 ) NOT NULL DEFAULT 'off',`icLength` TinyInt( 1 ) NOT NULL DEFAULT 0, `icPause` TinyInt( 1 ) NOT NULL DEFAULT 1, `icStop` TinyInt( 1 ) NOT NULL DEFAULT 0 ,`icText` TinyInt( 1 ) NOT NULL DEFAULT 1 ,`lastStatus` VarChar( 255 ) NULL,`refreshTokenSpotify` VarChar( 400 ) NOT NULL, `tokenSpotify` VarChar( 400 ) NOT NULL,`lastTrack` VarChar( 400 ) NULL, `icPhotoMusic` TinyInt( 1 ) NOT NULL DEFAULT 0, `albumForPhotoMusic` Int( 255 ) NOT NULL DEFAULT 0, `user_id` INT ( 255 ) NOT NULL, CONSTRAINT `unique_user_id` UNIQUE( `user_id` ), `tokenVK` VarChar( 255 ) NOT NULL) ENGINE = InnoDB;");
         return MySQL;
     }
 }
