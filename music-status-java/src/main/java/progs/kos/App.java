@@ -3,6 +3,7 @@ package progs.kos;
 import com.alibaba.fastjson.*;
 import com.mysql.cj.jdbc.exceptions.SQLError;
 import com.vk.api.sdk.exceptions.ApiParamException;
+import com.vk.api.sdk.objects.base.responses.OkResponse;
 import com.vk.api.sdk.objects.photos.Photo;
 import com.vk.api.sdk.objects.photos.PhotoAlbumFull;
 import com.vk.api.sdk.objects.photos.PhotoUpload;
@@ -36,26 +37,26 @@ public class App extends Const{
         TransportClient transportClient = HttpTransportClient.getInstance();
         VkApiClient vk = new VkApiClient(transportClient);
         try {
-            Connection MySQL = connection(url, user_name, user_password);
-            ResultSet start = mysqlQuery(MySQL,"SELECT `isStart` FROM `active_state`");
+            MySQL = connection(url, user_name, user_password);
+            ResultSet start = mysqlQuery("SELECT `isStart` FROM `active_state`");
             if(start.next()) {
                 while (start.getInt("isStart") == 1) {
                     try {
                         long timeStart = System.currentTimeMillis();
                         ResultSet infoUsers;
-                        infoUsers =  mysqlQuery(MySQL, "SELECT * FROM `dataSettings`");
+                        infoUsers =  mysqlQuery("SELECT * FROM `dataSettings`");
 
                         while (infoUsers.next()) {
                             UserActor actor = new UserActor(infoUsers.getInt("user_id"), infoUsers.getString("tokenVK"));
                             switch (infoUsers.getString("operationId")) {
                                 case "start":
                                     Status status = vk.status().get(actor).userId(actor.getId()).execute();
-                                    mysqlQuery(MySQL, "UPDATE dataSettings set lastStatus = \'" + status.getText() + "\', operationID = 'on' WHERE user_id = " + actor.getId());
-                                    on(infoUsers.getString("tokenSpotify"), infoUsers.getString("refreshTokenSpotify"), AUTHORISATION_SPOTIFY, MySQL, vk, actor, TIME_SLEEP, infoUsers);
+                                    mysqlQuery("UPDATE dataSettings set lastStatus = \'" + status.getText() + "\', operationID = 'on' WHERE user_id = " + actor.getId());
+                                    on(infoUsers.getString("tokenSpotify"), infoUsers.getString("refreshTokenSpotify"), AUTHORISATION_SPOTIFY, vk, actor, infoUsers);
                                     break;
 
                                 case "on":
-                                    on(infoUsers.getString("tokenSpotify"), infoUsers.getString("refreshTokenSpotify"), AUTHORISATION_SPOTIFY, MySQL, vk, actor, TIME_SLEEP, infoUsers);
+                                    on(infoUsers.getString("tokenSpotify"), infoUsers.getString("refreshTokenSpotify"), AUTHORISATION_SPOTIFY, vk, actor, infoUsers);
                                     break;
 
                                 case "finish":
@@ -63,12 +64,12 @@ public class App extends Const{
                                     if (infoUsers.getInt("icPhotoMusic") == 1) {
                                         try {
                                             vk.photos().deleteAlbum(actor, infoUsers.getInt("albumForPhotoMusic")).execute();
-                                            mysqlQuery(MySQL, "UPDATE dataSettings SET `albumForPhotoMusic` = 0, operationID = 'off', lastTrack = '' WHERE user_id = " + actor.getId());
+                                            mysqlQuery("UPDATE dataSettings SET `albumForPhotoMusic` = 0, operationID = 'off', lastTrack = '' WHERE user_id = " + actor.getId());
                                         }catch (ApiParamException e) {
                                             e.printStackTrace();
                                         }
                                     } else
-                                        mysqlQuery(MySQL, "UPDATE dataSettings SET  operationID = 'off', lastTrack = '' WHERE user_id = " + actor.getId()); //Не говно код, а уменьшение запросов
+                                        mysqlQuery("UPDATE dataSettings SET  operationID = 'off', lastTrack = '' WHERE user_id = " + actor.getId()); //Не говно код, а уменьшение запросов
 
 
                                     break;
@@ -76,13 +77,13 @@ public class App extends Const{
                         }
 
 
-                        mysqlQuery(MySQL, "UPDATE active_state SET  active_time = " + (long)System.currentTimeMillis()/1000);
+                        mysqlQuery("UPDATE active_state SET  active_time = " + (long)System.currentTimeMillis()/1000);
 
                         long sleep = TIME_SLEEP - (System.currentTimeMillis() - timeStart);
                         if(sleep >= 0)
                             Thread.sleep(sleep);
 
-                        start = mysqlQuery(MySQL, "SELECT `isStart` FROM `active_state`");
+                        start = mysqlQuery("SELECT `isStart` FROM `active_state`");
                         start.next();
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -100,35 +101,22 @@ public class App extends Const{
         }
     }
 
-    public static ResultSet mysqlQuery(Connection MySQL, String query) throws SQLException {
+    public static ResultSet mysqlQuery(String query) {
         ResultSet resultSet = null;
-        try {
-            resultSet = MySQL.prepareStatement(query).executeQuery();
-        }catch (SQLException e){
-            MySQL.prepareStatement(query).executeUpdate();
-        }
-        new SleepThread(MySQL).start();
+            try {
+                resultSet = MySQL.prepareStatement(query).executeQuery();
+            } catch (SQLException e) {
+                try {
+                    MySQL.prepareStatement(query).executeUpdate();
+                }catch (SQLException i){
+                    MySQL = connection(url, user_name, user_password);
+                    mysqlQuery(query);
+                }
+            }
         return resultSet;
     }
 
-    static class SleepThread extends Thread{
-        final Connection MySQL;
-
-        public SleepThread(Connection MySQL){
-            this.MySQL = MySQL;
-        }
-        public void run(){
-            synchronized(MySQL) {
-                try {
-                    MySQL.wait(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
-
-    public static void on(String tokenSpotify, String refreshTokenSpotify, String authorizationSpotify, Connection MySQL, VkApiClient vk, UserActor actor, int TIME_SLEEP, ResultSet infoUser) throws InterruptedException, SQLException, IOException {
+    public static void on(String tokenSpotify, String refreshTokenSpotify, String authorizationSpotify, VkApiClient vk, UserActor actor, ResultSet infoUser) throws SQLException, IOException {
         boolean icSleep = false;
         try {
             icSleep = infoUser.getString("lastTrack").split("%%%").length == 2;
@@ -161,7 +149,6 @@ public class App extends Const{
 
             track = artists + " — " + music.get("name") + album;
 
-            System.out.println(track);
 
             if (infoUser.getInt("icText") == 1){
                 statusTrack = "Слушает: " + artists + " — " + music.get("name") + album;
@@ -179,24 +166,22 @@ public class App extends Const{
 
             if(!icLastTrack || icSleep) {
                 vk.status().set(actor).text(statusTrack).execute();
-                mysqlQuery(MySQL, "UPDATE dataSettings set lastTrack = \'" + track.toString().replace("'", "@") + "\' WHERE user_id = " + actor.getId());
+                mysqlQuery("UPDATE dataSettings set lastTrack = \'" + track.toString().replace("'", "@") + "\' WHERE user_id = " + actor.getId());
 
 
                 if(infoUser.getInt("icPhotoMusic") == 1 && (!icSleep || !icLastTrack)){
-                    System.out.println("photo");
                     JSONArray urls = albumJSON.getJSONArray("images");
                     JSONObject urlPhoto =  urls.getJSONObject(0);
                     if(infoUser.getInt("albumForPhotoMusic") == 0){
                         PhotoAlbumFull photoAlbumFull = vk.photos().createAlbum(actor, "Недавно прослушанные треки").description("В этом альбоме находятся обложки недавно прослушанных треков").execute();
-                        mysqlQuery(MySQL, "UPDATE dataSettings set albumForPhotoMusic = " + photoAlbumFull.getId() + " WHERE user_id = " + actor.getId());
+                        mysqlQuery("UPDATE dataSettings set albumForPhotoMusic = " + photoAlbumFull.getId() + " WHERE user_id = " + actor.getId());
 
-                        photoStatus(photoAlbumFull.getId(), vk, actor, track, MySQL, urlPhoto.get("url").toString());
+                        photoStatus(photoAlbumFull.getId(), vk, actor, track, urlPhoto.get("url").toString());
                     }else
-                        photoStatus(infoUser.getInt("albumForPhotoMusic"), vk, actor, track, MySQL, urlPhoto.get("url").toString()); }
+                        photoStatus(infoUser.getInt("albumForPhotoMusic"), vk, actor, track, urlPhoto.get("url").toString()); }
             }
 
         }catch (IOException e){
-            System.out.print("IOException");
             Process process = getRuntime().exec("curl -H \"Authorization: Basic " + authorizationSpotify + "\" -d grant_type=refresh_token -d refresh_token=" + refreshTokenSpotify + " -d redirect_uri=https://music-statuc-by-kos.herokuapp.com/spotify https://accounts.spotify.com/api/token --ssl-no-revoke");
             InputStream stream = process.getInputStream();
             BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
@@ -207,9 +192,9 @@ public class App extends Const{
             }
             JSONObject json = JSON.parseObject(result.toString());
 
-            mysqlQuery(MySQL, "UPDATE dataSettings SET `tokenSpotify` = \'" + json.get("access_token").toString() + "\' WHERE user_id = " + actor.getId());
+            mysqlQuery("UPDATE dataSettings SET `tokenSpotify` = \'" + json.get("access_token").toString() + "\' WHERE user_id = " + actor.getId());
 
-            on(json.get("access_token").toString(), refreshTokenSpotify, authorizationSpotify, MySQL, vk, actor, TIME_SLEEP, infoUser);
+            on(json.get("access_token").toString(), refreshTokenSpotify, authorizationSpotify, vk, actor, infoUser);
         }catch (NullPointerException e){
             //Сон Sleep
             try {
@@ -222,30 +207,31 @@ public class App extends Const{
                             if (infoUser.getInt("icText") == 1)
                                 vk.status().set(actor).text("Слушал: " + infoUser.getString("lastTrack")).execute();
                             else vk.status().set(actor).text(infoUser.getString("lastTrack").replace("@", "'")).execute();
-                            mysqlQuery(MySQL, "UPDATE dataSettings set lastTrack = \'" + infoUser.getString("lastTrack") + "%%%sleep\' WHERE user_id = " + actor.getId());
+                            mysqlQuery("UPDATE dataSettings set lastTrack = \'" + infoUser.getString("lastTrack") + "%%%sleep\' WHERE user_id = " + actor.getId());
                         }
                     }else if (message.equals("1")){
                         if(!icSleep) {
                             if (infoUser.getInt("icText") == 1)
                                 vk.status().set(actor).text("На паузе: " + infoUser.getString("lastTrack")).execute();
                             else vk.status().set(actor).text(infoUser.getString("lastTrack").replace("@", "'")).execute();
-                            mysqlQuery(MySQL, "UPDATE dataSettings set lastTrack = \'" + infoUser.getString("lastTrack") + "%%%sleep\' WHERE user_id = " + actor.getId());
+                            mysqlQuery("UPDATE dataSettings set lastTrack = \'" + infoUser.getString("lastTrack") + "%%%sleep\' WHERE user_id = " + actor.getId());
                         }
                     } else {
                         vk.status().set(actor).text(infoUser.getString("lastStatus")).execute();
                         if (infoUser.getInt("icPhotoMusic") == 1) {
                             if (infoUser.getInt("albumForPhotoMusic") != 0) {
-                                vk.photos().deleteAlbum(actor, infoUser.getInt("albumForPhotoMusic")).execute();
-                                mysqlQuery(MySQL, "UPDATE dataSettings SET `albumForPhotoMusic` = 0, `lastTrack` = '' WHERE user_id = " + actor.getId());
+                                OkResponse okResponse = vk.photos().deleteAlbum(actor, infoUser.getInt("albumForPhotoMusic")).execute();
+                                mysqlQuery("UPDATE dataSettings SET `albumForPhotoMusic` = 0, `lastTrack` = '' WHERE user_id = " + actor.getId());
+                                System.out.println(okResponse);
                             }
                         } else
-                            mysqlQuery(MySQL, "UPDATE dataSettings SET `lastTrack` = '' WHERE user_id = " + actor.getId());
+                            mysqlQuery("UPDATE dataSettings SET `lastTrack` = '' WHERE user_id = " + actor.getId());
 
                     }
                 }else{
                     String status = vk.status().get(actor).userId(actor.getId()).execute().getText();
                     if(!status.equals(infoUser.getString("lastStatus")))
-                        mysqlQuery(MySQL, "UPDATE dataSettings SET `lastStatus` = '"+ status +"' WHERE user_id = " + actor.getId());
+                        mysqlQuery("UPDATE dataSettings SET `lastStatus` = '"+ status +"' WHERE user_id = " + actor.getId());
 
                 }
 
@@ -261,7 +247,7 @@ public class App extends Const{
         }
     }
 
-    public static void photoStatus(int album_id, VkApiClient vk, UserActor actor, String track, Connection MySQL, String photoUrl) throws SQLException, ClientException, ApiException {
+    public static void photoStatus(int album_id, VkApiClient vk, UserActor actor, String track, String photoUrl) throws ClientException, ApiException {
         File photo = null;
         try {
             photo = File.createTempFile("photo", ".jpg");
@@ -287,14 +273,12 @@ public class App extends Const{
             in.close();
 
             PhotoUploadResponse photoUploadResponse = vk.upload().photo(vk.photos().getUploadServer(actor).albumId(album_id).execute().getUploadUrl(), photo).execute();
-            System.out.println(photoUploadResponse.toString());
-            List<Photo> photoList = vk.photos().save(actor).server(photoUploadResponse.getServer()).photosList(photoUploadResponse.getPhotosList()).hash(photoUploadResponse.getHash()).albumId(album_id).caption(track).execute();
-            System.out.println(photoList.toString());
+            vk.photos().save(actor).server(photoUploadResponse.getServer()).photosList(photoUploadResponse.getPhotosList()).hash(photoUploadResponse.getHash()).albumId(album_id).caption(track).execute();
         } catch (ApiException e) {
             e.printStackTrace();
             PhotoAlbumFull photoAlbumFull = vk.photos().createAlbum(actor, "Недавно прослушанные треки").description("В этом альбоме находятся обложки недавно прослушанных треков").execute();
-            mysqlQuery(MySQL, "UPDATE dataSettings SET `albumForPhotoMusic` = " + photoAlbumFull.getId() + " WHERE user_id = " + actor.getId());
-            photoStatus(photoAlbumFull.getId(), vk, actor, track, MySQL, photoUrl);
+            mysqlQuery("UPDATE dataSettings SET `albumForPhotoMusic` = " + photoAlbumFull.getId() + " WHERE user_id = " + actor.getId());
+            photoStatus(photoAlbumFull.getId(), vk, actor, track, photoUrl);
         } catch (ClientException e) {
             e.printStackTrace();
         } catch (FileNotFoundException e) {
@@ -332,12 +316,18 @@ public class App extends Const{
         return JSON.parseObject(result.toString());
     }
 
-    public static Connection connection (String url, String user, String password) throws SQLException {
-        Connection MySQL = DriverManager.getConnection(url, user, password);
-        mysqlQuery(MySQL, "SET NAMES 'utf8'");
-        mysqlQuery(MySQL, "SET CHARACTER SET utf8mb4;");
-        mysqlQuery(MySQL, "CREATE TABLE IF NOT EXISTS `active_state`(`active_time` BigInt( 255 ) NOT NULL, `isStart` TinyInt( 1 ) NOT NULL DEFAULT 1 ) ENGINE = InnoDB;");
-        mysqlQuery(MySQL, "CREATE TABLE IF NOT EXISTS `dataSettings` (`operationId` VarChar( 255 ) NOT NULL DEFAULT 'off',`icLength` TinyInt( 1 ) NOT NULL DEFAULT 0, `icPause` TinyInt( 1 ) NOT NULL DEFAULT 1, `icStop` TinyInt( 1 ) NOT NULL DEFAULT 0 ,`icText` TinyInt( 1 ) NOT NULL DEFAULT 1 ,`lastStatus` VarChar( 255 ) NULL,`refreshTokenSpotify` VarChar( 400 ) NOT NULL, `tokenSpotify` VarChar( 400 ) NOT NULL,`lastTrack` VarChar( 400 ) NULL, `icPhotoMusic` TinyInt( 1 ) NOT NULL DEFAULT 0, `albumForPhotoMusic` Int( 255 ) NOT NULL DEFAULT 0, `user_id` INT ( 255 ) NOT NULL, CONSTRAINT `unique_user_id` UNIQUE( `user_id` ), `tokenVK` VarChar( 255 ) NOT NULL) ENGINE = InnoDB;");
+    public static Connection connection (String url, String user, String password) {
+        Connection MySQL = null;
+        try {
+            MySQL = DriverManager.getConnection(url, user, password);
+            MySQL.prepareStatement("SET NAMES 'utf8'").executeUpdate();
+            MySQL.prepareStatement("SET CHARACTER SET utf8mb4;").executeUpdate();
+            MySQL.prepareStatement("CREATE TABLE IF NOT EXISTS `active_state`(`active_time` BigInt( 255 ) NOT NULL, `isStart` TinyInt( 1 ) NOT NULL DEFAULT 1 ) ENGINE = InnoDB;").executeUpdate();
+            MySQL.prepareStatement("CREATE TABLE IF NOT EXISTS `dataSettings` (`operationId` VarChar( 255 ) NOT NULL DEFAULT 'off',`icLength` TinyInt( 1 ) NOT NULL DEFAULT 0, `icPause` TinyInt( 1 ) NOT NULL DEFAULT 1, `icStop` TinyInt( 1 ) NOT NULL DEFAULT 0 ,`icText` TinyInt( 1 ) NOT NULL DEFAULT 1 ,`lastStatus` VarChar( 255 ) NULL,`refreshTokenSpotify` VarChar( 400 ) NOT NULL, `tokenSpotify` VarChar( 400 ) NOT NULL,`lastTrack` VarChar( 400 ) NULL, `icPhotoMusic` TinyInt( 1 ) NOT NULL DEFAULT 0, `albumForPhotoMusic` Int( 255 ) NOT NULL DEFAULT 0, `user_id` INT ( 255 ) NOT NULL, CONSTRAINT `unique_user_id` UNIQUE( `user_id` ), `tokenVK` VarChar( 255 ) NOT NULL) ENGINE = InnoDB;").executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            connection(url, user, password);
+        }
         return MySQL;
     }
 }
