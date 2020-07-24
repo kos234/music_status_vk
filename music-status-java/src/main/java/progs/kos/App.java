@@ -15,6 +15,8 @@ import com.vk.api.sdk.client.actors.UserActor;
 import com.vk.api.sdk.exceptions.ApiException;
 import com.vk.api.sdk.exceptions.ClientException;
 import com.vk.api.sdk.httpclient.HttpTransportClient;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.core.config.Configurator;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.*;
@@ -36,11 +38,13 @@ public class App extends Const{
         final String AUTHORISATION_SPOTIFY = Base64.getEncoder().encodeToString("dde6a297cdc345059eda98c69ba722c0:ce45e9cbc7da47019b6540f9abe00a68".getBytes());
         TransportClient transportClient = HttpTransportClient.getInstance();
         VkApiClient vk = new VkApiClient(transportClient);
+        Configurator.setLevel("com.vk.api.sdk.httpclient.HttpTransportClient", Level.OFF);
         try {
             MySQL = connection(url, user_name, user_password);
             ResultSet start = mysqlQuery("SELECT `isStart` FROM `active_state`");
             if(start.next()) {
-                while (start.getInt("isStart") == 1) {
+                int icStart = start.getInt("isStart");
+                while (icStart == 1) {
                     try {
                         long timeStart = System.currentTimeMillis();
                         ResultSet infoUsers;
@@ -63,7 +67,7 @@ public class App extends Const{
                                     vk.status().set(actor).text(infoUsers.getString("lastStatus")).execute();
                                     if (infoUsers.getInt("icPhotoMusic") == 1) {
                                         try {
-                                            vk.photos().deleteAlbum(actor, infoUsers.getInt("albumForPhotoMusic")).execute();
+                                            System.out.println(vk.photos().deleteAlbum(actor, infoUsers.getInt("albumForPhotoMusic")).execute());
                                             mysqlQuery("UPDATE dataSettings SET `albumForPhotoMusic` = 0, operationID = 'off', lastTrack = '' WHERE user_id = " + actor.getId());
                                         }catch (ApiParamException e) {
                                             e.printStackTrace();
@@ -84,7 +88,9 @@ public class App extends Const{
                             Thread.sleep(sleep);
 
                         start = mysqlQuery("SELECT `isStart` FROM `active_state`");
-                        start.next();
+                        if(start.next())
+                            icStart = start.getInt("isStart");
+                        else icStart = 1;
                     } catch (IOException e) {
                         e.printStackTrace();
                     } catch (ApiException e) {
@@ -109,8 +115,8 @@ public class App extends Const{
                 try {
                     MySQL.prepareStatement(query).executeUpdate();
                 }catch (SQLException i){
-                    MySQL = connection(url, user_name, user_password);
-                    mysqlQuery(query);
+                        MySQL = connection(url, user_name, user_password);
+                        mysqlQuery(query);
                 }
             }
         return resultSet;
@@ -175,7 +181,7 @@ public class App extends Const{
                     if(infoUser.getInt("albumForPhotoMusic") == 0){
                         PhotoAlbumFull photoAlbumFull = vk.photos().createAlbum(actor, "Недавно прослушанные треки").description("В этом альбоме находятся обложки недавно прослушанных треков").execute();
                         mysqlQuery("UPDATE dataSettings set albumForPhotoMusic = " + photoAlbumFull.getId() + " WHERE user_id = " + actor.getId());
-
+                        System.out.println(photoAlbumFull.getId());
                         photoStatus(photoAlbumFull.getId(), vk, actor, track, urlPhoto.get("url").toString());
                     }else
                         photoStatus(infoUser.getInt("albumForPhotoMusic"), vk, actor, track, urlPhoto.get("url").toString()); }
@@ -278,6 +284,7 @@ public class App extends Const{
             e.printStackTrace();
             PhotoAlbumFull photoAlbumFull = vk.photos().createAlbum(actor, "Недавно прослушанные треки").description("В этом альбоме находятся обложки недавно прослушанных треков").execute();
             mysqlQuery("UPDATE dataSettings SET `albumForPhotoMusic` = " + photoAlbumFull.getId() + " WHERE user_id = " + actor.getId());
+            System.out.println(photoAlbumFull.getId());
             photoStatus(photoAlbumFull.getId(), vk, actor, track, photoUrl);
         } catch (ClientException e) {
             e.printStackTrace();
