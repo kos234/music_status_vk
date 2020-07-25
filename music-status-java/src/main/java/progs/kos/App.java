@@ -2,6 +2,7 @@ package progs.kos;
 
 import com.alibaba.fastjson.*;
 import com.mysql.cj.jdbc.exceptions.SQLError;
+import com.vk.api.sdk.client.ClientResponse;
 import com.vk.api.sdk.exceptions.ApiParamException;
 import com.vk.api.sdk.objects.base.responses.OkResponse;
 import com.vk.api.sdk.objects.photos.Photo;
@@ -32,13 +33,12 @@ import java.util.Properties;
 
 import static java.lang.Runtime.getRuntime;
 
-public class App extends Const{
+public class App extends Const implements com.vk.api.sdk.client.TransportClient{
     public static void main( String[] args ){
         final int TIME_SLEEP = 30 * 1000;
         final String AUTHORISATION_SPOTIFY = Base64.getEncoder().encodeToString("dde6a297cdc345059eda98c69ba722c0:ce45e9cbc7da47019b6540f9abe00a68".getBytes());
         TransportClient transportClient = HttpTransportClient.getInstance();
         VkApiClient vk = new VkApiClient(transportClient);
-        Configurator.setLevel("com.vk.api.sdk.httpclient.HttpTransportClient", Level.OFF);
         try {
             MySQL = connection(url, user_name, user_password);
             ResultSet start = mysqlQuery("SELECT `isStart` FROM `active_state`");
@@ -55,7 +55,7 @@ public class App extends Const{
                             switch (infoUsers.getString("operationId")) {
                                 case "start":
                                     Status status = vk.status().get(actor).userId(actor.getId()).execute();
-                                    mysqlQuery("UPDATE dataSettings set lastStatus = \'" + status.getText() + "\', operationID = 'on' WHERE user_id = " + actor.getId());
+                                    mysqlQuery("UPDATE dataSettings set lastStatus = '" + status.getText() + "', operationID = 'on' WHERE user_id = " + actor.getId());
                                     on(infoUsers.getString("tokenSpotify"), infoUsers.getString("refreshTokenSpotify"), AUTHORISATION_SPOTIFY, vk, actor, infoUsers);
                                     break;
 
@@ -81,7 +81,7 @@ public class App extends Const{
                         }
 
 
-                        mysqlQuery("UPDATE active_state SET  active_time = " + (long)System.currentTimeMillis()/1000);
+                        mysqlQuery("UPDATE active_state SET  active_time = " + System.currentTimeMillis() /1000);
 
                         long sleep = TIME_SLEEP - (System.currentTimeMillis() - timeStart);
                         if(sleep >= 0)
@@ -172,7 +172,7 @@ public class App extends Const{
 
             if(!icLastTrack || icSleep) {
                 vk.status().set(actor).text(statusTrack).execute();
-                mysqlQuery("UPDATE dataSettings set lastTrack = \'" + track.toString().replace("'", "@") + "\' WHERE user_id = " + actor.getId());
+                mysqlQuery("UPDATE dataSettings set lastTrack = '" + track.replace("'", "@") + "' WHERE user_id = " + actor.getId());
 
 
                 if(infoUser.getInt("icPhotoMusic") == 1 && (!icSleep || !icLastTrack)){
@@ -198,7 +198,7 @@ public class App extends Const{
             }
             JSONObject json = JSON.parseObject(result.toString());
 
-            mysqlQuery("UPDATE dataSettings SET `tokenSpotify` = \'" + json.get("access_token").toString() + "\' WHERE user_id = " + actor.getId());
+            mysqlQuery("UPDATE dataSettings SET `tokenSpotify` = '" + json.get("access_token").toString() + "' WHERE user_id = " + actor.getId());
 
             on(json.get("access_token").toString(), refreshTokenSpotify, authorizationSpotify, vk, actor, infoUser);
         }catch (NullPointerException e){
@@ -213,14 +213,14 @@ public class App extends Const{
                             if (infoUser.getInt("icText") == 1)
                                 vk.status().set(actor).text("Слушал: " + infoUser.getString("lastTrack")).execute();
                             else vk.status().set(actor).text(infoUser.getString("lastTrack").replace("@", "'")).execute();
-                            mysqlQuery("UPDATE dataSettings set lastTrack = \'" + infoUser.getString("lastTrack") + "%%%sleep\' WHERE user_id = " + actor.getId());
+                            mysqlQuery("UPDATE dataSettings set lastTrack = '" + infoUser.getString("lastTrack") + "%%%sleep' WHERE user_id = " + actor.getId());
                         }
                     }else if (message.equals("1")){
                         if(!icSleep) {
                             if (infoUser.getInt("icText") == 1)
                                 vk.status().set(actor).text("На паузе: " + infoUser.getString("lastTrack")).execute();
                             else vk.status().set(actor).text(infoUser.getString("lastTrack").replace("@", "'")).execute();
-                            mysqlQuery("UPDATE dataSettings set lastTrack = \'" + infoUser.getString("lastTrack") + "%%%sleep\' WHERE user_id = " + actor.getId());
+                            mysqlQuery("UPDATE dataSettings set lastTrack = '" + infoUser.getString("lastTrack") + "%%%sleep' WHERE user_id = " + actor.getId());
                         }
                     } else {
                         vk.status().set(actor).text(infoUser.getString("lastStatus")).execute();
@@ -267,7 +267,7 @@ public class App extends Const{
             urlconn.connect();
             InputStream in = urlconn.getInputStream();
             OutputStream writer = new FileOutputStream(photo);
-            byte buffer[] = new byte[1];
+            byte[] buffer = new byte[1];
             int c = in.read(buffer);
             while (c > 0) {
                 writer.write(buffer, 0, c);
@@ -336,5 +336,50 @@ public class App extends Const{
             connection(url, user, password);
         }
         return MySQL;
+    }
+
+    @Override
+    public ClientResponse get(String s) throws IOException {
+        return null;
+    }
+
+    @Override
+    public ClientResponse post(String s, String s1) throws IOException {
+        return null;
+    }
+
+    @Override
+    public ClientResponse post(String s, String s1, File file) throws IOException {
+        return null;
+    }
+
+    @Override
+    public ClientResponse post(String s, String s1, String s2) throws IOException {
+        return null;
+    }
+
+    @Override
+    public ClientResponse get(String s, String s1) throws IOException {
+        return null;
+    }
+
+    @Override
+    public ClientResponse post(String s) throws IOException {
+        return null;
+    }
+
+    @Override
+    public ClientResponse delete(String s) throws IOException {
+        return null;
+    }
+
+    @Override
+    public ClientResponse delete(String s, String s1) throws IOException {
+        return null;
+    }
+
+    @Override
+    public ClientResponse delete(String s, String s1, String s2) throws IOException {
+        return null;
     }
 }
