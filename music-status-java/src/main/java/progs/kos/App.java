@@ -86,11 +86,15 @@ public class App extends Const implements com.vk.api.sdk.client.TransportClient{
                         long sleep = TIME_SLEEP - (System.currentTimeMillis() - timeStart);
                         if(sleep >= 0)
                             Thread.sleep(sleep);
-
-                        start = mysqlQuery("SELECT `isStart` FROM `active_state`");
-                        if(start.next())
-                            icStart = start.getInt("isStart");
-                        else icStart = 1;
+                        try {
+                            start = mysqlQuery("SELECT `isStart` FROM `active_state`");
+                            if (start.next())
+                                icStart = start.getInt("isStart");
+                            else icStart = 1;
+                        }catch (NullPointerException e){
+                            icStart = 1;
+                            e.printStackTrace();
+                        }
                     } catch (IOException e) {
                         e.printStackTrace();
                     } catch (ApiException e) {
@@ -279,6 +283,7 @@ public class App extends Const implements com.vk.api.sdk.client.TransportClient{
             in.close();
 
             PhotoUploadResponse photoUploadResponse = vk.upload().photo(vk.photos().getUploadServer(actor).albumId(album_id).execute().getUploadUrl(), photo).execute();
+            System.out.println(photoUploadResponse);
             vk.photos().save(actor).server(photoUploadResponse.getServer()).photosList(photoUploadResponse.getPhotosList()).hash(photoUploadResponse.getHash()).albumId(album_id).caption(track).execute();
         } catch (ApiException e) {
             e.printStackTrace();
