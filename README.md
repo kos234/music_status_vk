@@ -5,7 +5,7 @@
 ## Connection / Подключение
 ### Step one: getting a spotify token / Шаг первый: получение токена Spotify
 
-Click the [link](https://accounts.spotify.com/authorize?client_id=dde6a297cdc345059eda98c69ba722c0&response_type=code&redirect_uri=https://music-status-by-kos.herokuapp.com/spotify&scope=user-read-currently-playing) and allow the app to access your Spotify account, after which you will be redirected to the site with your token Spotify and refresh token
+Click the [link](https://accounts.spotify.com/authorize?client_id=dde6a297cdc345059eda98c69ba722c0&response_type=code&redirect_uri=https://music-status-by-kos.herokuapp.com/spotify&scope=user-read-currently-playing,user-top-read) and allow the app to access your Spotify account, after which you will be redirected to the site with your token Spotify and refresh token
 
 Перейдите по [ссылке](https://accounts.spotify.com/authorize?client_id=dde6a297cdc345059eda98c69ba722c0&response_type=code&redirect_uri=https://music-status-by-kos.herokuapp.com/spotify&scope=user-read-currently-playing) и разрешите доступ приложению к вашему аккаунту Spotify, после чего вас перенаправит на сайт с вашим токеном Spotify и токеном для смены
 
