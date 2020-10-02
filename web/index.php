@@ -182,6 +182,8 @@ $app->post('/bot', function () use ($app) {
                             }
                             $string .= " - " . $tracks->items[$i]->name;
                         }
+
+                        $request_params['message'] = $string;
                     }
 
                 } elseif (mb_strcasecmp($text[0], '/off') == 0 || mb_strcasecmp($text[0], '/выключить') == 0) {
