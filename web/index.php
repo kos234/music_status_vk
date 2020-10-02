@@ -168,7 +168,7 @@ $app->post('/bot', function () use ($app) {
                         $num = 10;
                         if (isset($text[3]))
                             $num = $text[3];
-                        $tracks = getTracks($num, $request_params["tokenSpotify"]);
+                        $tracks = getTracks($num, $res_active["tokenSpotify"]);
                         $i = 0;
                         $string = "";
                         while (isset($tracks->items[$i])){
@@ -183,7 +183,7 @@ $app->post('/bot', function () use ($app) {
                             $string .= " - " . $tracks->items[$i]->name;
                         }
 
-                        $request_params['message'] = "$string";
+                        $request_params['message'] = $string;
                     }
 
                 } elseif (mb_strcasecmp($text[0], '/off') == 0 || mb_strcasecmp($text[0], '/выключить') == 0) {
