@@ -104,6 +104,7 @@ $app->post('/bot', function () use ($app) {
                         . "&#128190;/start|начать {Токен Spotify} {Токен замены Spotify} {Ссылка с кодом VK} — подключение\n"
                         . "&#127773;/on|включить — включает статус\n"
                         . "&#127770;/off|выключить — выключает статус\n"
+                        . "&#127770;/установить любимую музыку [количество, по умолчанию 10] - записывает в поле \"Любимая музыка\" несколько любимых треков, в зависимости от того сколько вы указали\n"
                         . "&#127763;/set operation|включить операцию {off, start, on, finish} — включает определенную операцию статуса\n"
                         . "&#9997;/guide|гайд - гайд по подключению\n"
                         . "&#128195;/FAQ - часто задаваемые вопросы\n"
@@ -158,6 +159,30 @@ $app->post('/bot', function () use ($app) {
 
                         $request_params['message'] = "&#127773;Включено!";
                     } else $request_params['message'] = "&#10060;Вы не привязаны к базе данных! Напишите /start|начать {Токен Spotify} {Токен замены Spotify} {Ссылка с кодом VK} для привязки!";
+
+                }elseif (mb_strcasecmp($text[0] . " " . $text[1] . " " . $text[2], '/установить любимую музыку') == 0) {
+                    $result = onCheak($mysqli, $data);
+                    if (isset($result['user_id'])) {
+                        $res = $mysqli->query("SELECT `tokenSpotify` FROM `datasettings` WHERE `user_id` = ''" . $result['user_id'] . "'' ");
+                        $res_active = $res->fetch_assoc();
+                        $num = 10;
+                        if (isset($text[3]))
+                            $num = $text[3];
+                        $tracks = getTracks($num, $request_params["tokenSpotify"]);
+                        $i = 0;
+                        $string = "";
+                        while (isset($tracks->items[$i])){
+                            $artists = 0;
+                            if($string != "")
+                                $string .= ", ";
+                            while (isset($tracks->items->artists[$artists])){
+                                if($artists != 0)
+                                    $string .= " & ";
+                                $string .= $tracks->items->artists[$artists]->name;
+                            }
+                            $string .= " - " . $tracks->items[$i]->name;
+                        }
+                    }
 
                 } elseif (mb_strcasecmp($text[0], '/off') == 0 || mb_strcasecmp($text[0], '/выключить') == 0) {
                     $result = onCheak($mysqli, $data);
@@ -351,6 +376,12 @@ function mb_strcasecmp($str1, $str2, $encoding = null) { //https://www.php.net/m
         ));
         curl_exec($myCurl);
         curl_close($myCurl);
+    }
+
+    function getTracks($limit, $tokenSpotify)
+    {
+        $output = shell_exec("curl -X \"GET\" \"https://api.spotify.com/v1/me/top/tracks?time_range=long_term&limit=".$limit."&offset=0\" -H \"Accept: application/json\" -H \"Content-Type: application/json\" -H \"Authorization: Bearer ".$tokenSpotify."\" --ssl-no-revoke");
+        return json_decode($output);
     }
 
     ?>
