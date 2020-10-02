@@ -382,14 +382,15 @@ function mb_strcasecmp($str1, $str2, $encoding = null) { //https://www.php.net/m
 
     function getTracks($limit, $tokenSpotify, $mysqli, $result)
     {
-        $resultString = json_decode(file_get_contents('https://api.spotify.com/v1/me/top/tracks?time_range=long_term&limit='.$limit.'&offset=0&access_token='.$tokenSpotify));
+        var_dump("https://api.spotify.com/v1/me/top/tracks?time_range=long_term&limit=".$limit."&offset=0&access_token=".$tokenSpotify);
+        $resultString = json_decode(file_get_contents("https://api.spotify.com/v1/me/top/tracks?time_range=long_term&limit=".$limit."&offset=0&access_token=".$tokenSpotify));
         if(isset($result->error->status))
             if($result->error->status == 401) {
                 $res = $mysqli->query("SELECT `refreshTokenSpotify` FROM `datasettings` WHERE `user_id` = '" . $result['user_id'] . "' ");
                 $res_active = $res->fetch_assoc();
                 $output = shell_exec("curl -H \"Authorization: Basic " + AUTHORISATION_BASE_64_SPOTIFY + "\" -d grant_type=refresh_token -d refresh_token=" + $res_active["refreshTokenSpotify"] + " -d redirect_uri=https://music-statuc-by-kos.herokuapp.com/spotify https://accounts.spotify.com/api/token --ssl-no-revoke");
                 $output = json_decode($output);
-                $resultString = json_decode(file_get_contents('https://api.spotify.com/v1/me/top/tracks?time_range=long_term&limit='.$limit.'&offset=0&access_token='.$output["access_token"]));
+                $resultString = json_decode(file_get_contents("https://api.spotify.com/v1/me/top/tracks?time_range=long_term&limit=".$limit."&offset=0&access_token=".$output["access_token"]));
                 $mysqli->query("UPDATE `datasettings` SET `tokenSpotify`= '" . $output["access_token"] . "' WHERE `user_id` = '". $result['user_id'] ."'");
 
             }
