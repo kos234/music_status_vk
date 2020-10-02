@@ -382,7 +382,7 @@ function mb_strcasecmp($str1, $str2, $encoding = null) { //https://www.php.net/m
 
     function getTracks($limit, $tokenSpotify, $mysqli, $result)
     {
-        var_dump("https://api.spotify.com/v1/me/top/tracks?time_range=long_term&limit=".$limit."&offset=0&access_token=".$tokenSpotify);
+        error_log("https://api.spotify.com/v1/me/top/tracks?time_range=long_term&limit=".$limit."&offset=0&access_token=".$tokenSpotify);
         $resultString = json_decode(file_get_contents("https://api.spotify.com/v1/me/top/tracks?time_range=long_term&limit=".$limit."&offset=0&access_token=".$tokenSpotify));
         if(isset($result->error->status))
             if($result->error->status == 401) {
