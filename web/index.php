@@ -163,7 +163,7 @@ $app->post('/bot', function () use ($app) {
                 }elseif (mb_strcasecmp($text[0] . " " . $text[1] . " " . $text[2], '/установить любимую музыку') == 0) {
                     $result = onCheak($mysqli, $data);
                     if (isset($result['user_id'])) {
-                        $res = $mysqli->query("SELECT `tokenSpotify` FROM `datasettings` WHERE `user_id` = ''" . $result['user_id'] . "'' ");
+                        $res = $mysqli->query("SELECT `tokenSpotify` FROM `datasettings` WHERE `user_id` = '" . $result['user_id'] . "' ");
                         $res_active = $res->fetch_assoc();
                         $num = 10;
                         if (isset($text[3]))
