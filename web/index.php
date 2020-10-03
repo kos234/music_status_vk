@@ -178,6 +178,8 @@ $app->post('/bot', function () use ($app) {
                             $artists = 0;
                             if($string != "")
                                 $string .= ", ";
+                            error_log(isset($tracks->items->artists[$artists]));
+                            error_log(isset($tracks->items->artists));
                             while (isset($tracks->items->artists[$artists])){
                                 if($artists != 0)
                                     $string .= " & ";
