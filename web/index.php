@@ -182,6 +182,8 @@ $app->post('/bot', function () use ($app) {
                                 if($artists != 0)
                                     $string .= " & ";
                                 $string .= $tracks->items->artists[$artists]->name;
+                                error_log("артист");
+                                error_log($tracks->items->artists[$artists]->name);
                                 $artists++;
                             }
                             error_log($string);
