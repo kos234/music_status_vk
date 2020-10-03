@@ -182,10 +182,12 @@ $app->post('/bot', function () use ($app) {
                                 if($artists != 0)
                                     $string .= " & ";
                                 $string .= $tracks->items->artists[$artists]->name;
+                                $artists++;
                             }
                             error_log($string);
                             error_log("loop");
                             $string .= " - " . $tracks->items[$i]->name;
+                            $i++;
                         }
 
                         $request_params['message'] = $string;
