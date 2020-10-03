@@ -1,4 +1,7 @@
 <?php
+
+use Cassandra\Exception\UnauthorizedException;
+
 ini_set('max_execution_time', 900);
 require('../vendor/autoload.php');
 
@@ -387,7 +390,7 @@ function mb_strcasecmp($str1, $str2, $encoding = null) { //https://www.php.net/m
         error_log("https://api.spotify.com/v1/me/top/tracks?time_range=long_term&limit=".$limit."&offset=0&access_token=".$tokenSpotify);
         try {
             $resultString = json_decode(file_get_contents("https://api.spotify.com/v1/me/top/tracks?time_range=long_term&limit=" . $limit . "&offset=0&access_token=" . $tokenSpotify));
-        }catch(\Cassandra\Exception\UnauthorizedException $exception){
+        }catch(UnauthorizedException $exception){
             error_log("401111!");
         }
 //            if($result->error->status == 401) {

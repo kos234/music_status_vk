@@ -6,7 +6,8 @@
     "symfony/twig-bridge": "^3",
     "ext-curl": "*",
     "ext-json": "*",
-    "ext-mysqli": "*"
+    "ext-mysqli": "*",
+    "ext-cassandra": "*"
   },
   "require-dev": {
     "heroku/heroku-buildpack-php": "*"
