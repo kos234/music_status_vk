@@ -397,7 +397,7 @@ function mb_strcasecmp($str1, $str2, $encoding = null) { //https://www.php.net/m
                 $mysqli->query("UPDATE `datasettings` SET `tokenSpotify`= '" . $output["access_token"] . "' WHERE `user_id` = '". $result['user_id'] ."'");
 
             }
-        return json_decode($output);
+        return json_decode($resultString);
     }
 
     ?>
