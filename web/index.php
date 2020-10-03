@@ -1,6 +1,5 @@
 <?php
 ini_set('max_execution_time', 900);
-ini_set('memory_limit', '-1');
 require('../vendor/autoload.php');
 
 define("CLIENT_ID_VK_APP", getenv("CLIENT_ID_VK_APP")); //Айди приложения
