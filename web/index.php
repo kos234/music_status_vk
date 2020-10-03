@@ -385,18 +385,20 @@ function mb_strcasecmp($str1, $str2, $encoding = null) { //https://www.php.net/m
         //$output = shell_exec("curl -X \"GET\" \"https://api.spotify.com/v1/me/top/tracks?time_range=long_term&limit=10&offset=0\" -H \"Accept: application/json\" -H \"Content-Type: application/json\" -H \"Authorization: Bearer BQDkHR8mwoIl9Kxi2_F4VUMT6BCXJB9MPTV27MxGq6Md0OfCqv-gZ8s_40h_5Rjh7aevitTlAeR_RbdKIUpC818cmeAVXn97Isjjj-RR86aVcEHw3aOCGUCYdig4V9TLAAuyi0VGhY7pa7sQhZwyXDNFoD9XotwPlAs4SzI7Y6w7K7SX7k9NDk5lNcl79g5PoGAuXw2DzjuyL6w8os1kC15W7pYpR0AbiIpqOw7sWl9PltF-vYG8WG3K5LIj0GSFqp5Iw1QmgjHKZFtDV4oPbhs9DxImCnWJg_A\" --silent --show-error");
         //error_log($output);
         error_log("https://api.spotify.com/v1/me/top/tracks?time_range=long_term&limit=".$limit."&offset=0&access_token=".$tokenSpotify);
-        $resultString = json_decode(file_get_contents("https://api.spotify.com/v1/me/top/tracks?time_range=long_term&limit=".$limit."&offset=0&access_token=".$tokenSpotify));
-        error_log($resultString);
-        if(isset($result->error->status))
-            if($result->error->status == 401) {
-                $res = $mysqli->query("SELECT `refreshTokenSpotify` FROM `datasettings` WHERE `user_id` = '" . $result['user_id'] . "' ");
-                $res_active = $res->fetch_assoc();
-                $output = shell_exec("curl -H \"Authorization: Basic " + AUTHORISATION_BASE_64_SPOTIFY + "\" -d grant_type=refresh_token -d refresh_token=" + $res_active["refreshTokenSpotify"] + " -d redirect_uri=https://music-statuc-by-kos.herokuapp.com/spotify https://accounts.spotify.com/api/token --ssl-no-revoke");
-                $output = json_decode($output);
-                $resultString = json_decode(file_get_contents("https://api.spotify.com/v1/me/top/tracks?time_range=long_term&limit=".$limit."&offset=0&access_token=".$output["access_token"]));
-                $mysqli->query("UPDATE `datasettings` SET `tokenSpotify`= '" . $output["access_token"] . "' WHERE `user_id` = '". $result['user_id'] ."'");
-
-            }
+        try {
+            $resultString = json_decode(file_get_contents("https://api.spotify.com/v1/me/top/tracks?time_range=long_term&limit=" . $limit . "&offset=0&access_token=" . $tokenSpotify));
+        }catch(\Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException $exception){
+            error_log("401111!");
+        }
+//            if($result->error->status == 401) {
+//                $res = $mysqli->query("SELECT `refreshTokenSpotify` FROM `datasettings` WHERE `user_id` = '" . $result['user_id'] . "' ");
+//                $res_active = $res->fetch_assoc();
+//                $output = shell_exec("curl -H \"Authorization: Basic " + AUTHORISATION_BASE_64_SPOTIFY + "\" -d grant_type=refresh_token -d refresh_token=" + $res_active["refreshTokenSpotify"] + " -d redirect_uri=https://music-statuc-by-kos.herokuapp.com/spotify https://accounts.spotify.com/api/token --ssl-no-revoke");
+//                $output = json_decode($output);
+//                $resultString = json_decode(file_get_contents("https://api.spotify.com/v1/me/top/tracks?time_range=long_term&limit=".$limit."&offset=0&access_token=".$output["access_token"]));
+//                $mysqli->query("UPDATE `datasettings` SET `tokenSpotify`= '" . $output["access_token"] . "' WHERE `user_id` = '". $result['user_id'] ."'");
+//
+//            }
         return json_decode($resultString);
     }
 
