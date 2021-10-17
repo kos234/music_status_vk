@@ -1,6 +1,6 @@
 # Music status for vk / Музыкальный статус для вк
 
-<video src="preview.mp4" autoplay="true" muted loop></video>
+![preview](preview.gif)
 ### Created using the libraries' / Создано с использованием библиотек: [php-getting-started](https://github.com/heroku/php-getting-started), [vk-php-sdk](https://github.com/VKCOM/vk-php-sdk)
 ## Connection / Подключение
 ### Step one: getting a spotify token / Шаг первый: получение токена Spotify
