@@ -52,9 +52,9 @@ public class App extends Const implements com.vk.api.sdk.client.TransportClient{
 
                         while (infoUsers.next()) {
                             UserActor actor = new UserActor(infoUsers.getInt("user_id"), infoUsers.getString("tokenVK"));
+                            Status status = vk.status().get(actor).userId(actor.getId()).execute();
                             switch (infoUsers.getString("operationId")) {
                                 case "start":
-                                    Status status = vk.status().get(actor).userId(actor.getId()).execute();
                                     mysqlQuery("UPDATE dataSettings set lastStatus = '" + status.getText() + "', operationID = 'on' WHERE user_id = " + actor.getId());
                                     on(infoUsers.getString("tokenSpotify"), infoUsers.getString("refreshTokenSpotify"), AUTHORISATION_SPOTIFY, vk, actor, infoUsers);
                                     break;
