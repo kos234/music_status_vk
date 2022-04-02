@@ -1,23 +1,17 @@
 package progs.kos;
 
 import com.alibaba.fastjson.*;
-import com.mysql.cj.jdbc.exceptions.SQLError;
-import com.vk.api.sdk.client.ClientResponse;
 import com.vk.api.sdk.exceptions.ApiParamException;
 import com.vk.api.sdk.objects.base.responses.OkResponse;
-import com.vk.api.sdk.objects.photos.Photo;
-import com.vk.api.sdk.objects.photos.PhotoAlbumFull;
-import com.vk.api.sdk.objects.photos.PhotoUpload;
+import com.vk.api.sdk.objects.photos.responses.CreateAlbumResponse;
 import com.vk.api.sdk.objects.photos.responses.PhotoUploadResponse;
-import com.vk.api.sdk.objects.status.Status;
 import com.vk.api.sdk.client.TransportClient;
 import com.vk.api.sdk.client.VkApiClient;
 import com.vk.api.sdk.client.actors.UserActor;
 import com.vk.api.sdk.exceptions.ApiException;
 import com.vk.api.sdk.exceptions.ClientException;
 import com.vk.api.sdk.httpclient.HttpTransportClient;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.core.config.Configurator;
+import com.vk.api.sdk.objects.status.responses.GetResponse;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.*;
@@ -28,13 +22,38 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.sql.*;
 import java.util.Base64;
-import java.util.List;
-import java.util.Properties;
+import java.util.Scanner;
 
 import static java.lang.Runtime.getRuntime;
 
-public class App extends Const implements com.vk.api.sdk.client.TransportClient{
+public class App {
+    protected static String url;
+    protected static String user_name;
+    protected static String user_password;
+    protected static Connection MySQL = null;
+
     public static void main( String[] args ){
+        boolean isAuth = false;
+        while (!isAuth){
+            Scanner scanner = new Scanner(System.in);
+            System.out.println("Вставьте ссылку подключения к MYSQL(jdbc:mysql://...)");
+            url = "jdbc:mysql://" +  scanner.nextLine();
+            System.out.println("Вставьте имя пользователя MYSQL");
+            user_name = scanner.nextLine();
+            System.out.println("Вставьте пароль пользователя MYSQL");
+            user_password = scanner.nextLine();
+            MySQL = connection(url, user_name, user_password);
+            if(MySQL != null){
+                isAuth = true;
+                System.out.println("Запуск сервер!");
+                start();
+            }else{
+                System.out.println("Попробуйте снова!");
+            }
+        }
+    }
+
+    public static void start(){
         final int TIME_SLEEP = 30 * 1000;
         final String AUTHORISATION_SPOTIFY = Base64.getEncoder().encodeToString("dde6a297cdc345059eda98c69ba722c0:ce45e9cbc7da47019b6540f9abe00a68".getBytes());
         TransportClient transportClient = HttpTransportClient.getInstance();
@@ -52,7 +71,7 @@ public class App extends Const implements com.vk.api.sdk.client.TransportClient{
 
                         while (infoUsers.next()) {
                             UserActor actor = new UserActor(infoUsers.getInt("user_id"), infoUsers.getString("tokenVK"));
-                            Status status = vk.status().get(actor).userId(actor.getId()).execute();
+                            GetResponse status = vk.status().get(actor).userId(actor.getId()).execute();
                             switch (infoUsers.getString("operationId")) {
                                 case "start":
                                     mysqlQuery("UPDATE dataSettings set lastStatus = '" + status.getText() + "', operationID = 'on' WHERE user_id = " + actor.getId());
@@ -183,7 +202,7 @@ public class App extends Const implements com.vk.api.sdk.client.TransportClient{
                     JSONArray urls = albumJSON.getJSONArray("images");
                     JSONObject urlPhoto =  urls.getJSONObject(0);
                     if(infoUser.getInt("albumForPhotoMusic") == 0){
-                        PhotoAlbumFull photoAlbumFull = vk.photos().createAlbum(actor, "Недавно прослушанные треки").description("В этом альбоме находятся обложки недавно прослушанных треков").execute();
+                        CreateAlbumResponse photoAlbumFull = vk.photos().createAlbum(actor, "Недавно прослушанные треки").description("В этом альбоме находятся обложки недавно прослушанных треков").execute();
                         mysqlQuery("UPDATE dataSettings set albumForPhotoMusic = " + photoAlbumFull.getId() + " WHERE user_id = " + actor.getId());
                         System.out.println(photoAlbumFull.getId());
                         photoStatus(photoAlbumFull.getId(), vk, actor, track, urlPhoto.get("url").toString());
@@ -282,12 +301,12 @@ public class App extends Const implements com.vk.api.sdk.client.TransportClient{
             writer.close();
             in.close();
 
-            PhotoUploadResponse photoUploadResponse = vk.upload().photo(vk.photos().getUploadServer(actor).albumId(album_id).execute().getUploadUrl(), photo).execute();
+            PhotoUploadResponse photoUploadResponse = vk.upload().photo(String.valueOf(vk.photos().getUploadServer(actor).albumId(album_id).execute().getUploadUrl()), photo).execute();
             System.out.println(photoUploadResponse);
             vk.photos().save(actor).server(photoUploadResponse.getServer()).photosList(photoUploadResponse.getPhotosList()).hash(photoUploadResponse.getHash()).albumId(album_id).caption(track).execute();
         } catch (ApiException e) {
             e.printStackTrace();
-            PhotoAlbumFull photoAlbumFull = vk.photos().createAlbum(actor, "Недавно прослушанные треки").description("В этом альбоме находятся обложки недавно прослушанных треков").execute();
+            CreateAlbumResponse photoAlbumFull = vk.photos().createAlbum(actor, "Недавно прослушанные треки").description("В этом альбоме находятся обложки недавно прослушанных треков").execute();
             mysqlQuery("UPDATE dataSettings SET `albumForPhotoMusic` = " + photoAlbumFull.getId() + " WHERE user_id = " + actor.getId());
             System.out.println(photoAlbumFull.getId());
             photoStatus(photoAlbumFull.getId(), vk, actor, track, photoUrl);
@@ -341,50 +360,5 @@ public class App extends Const implements com.vk.api.sdk.client.TransportClient{
             connection(url, user, password);
         }
         return MySQL;
-    }
-
-    @Override
-    public ClientResponse get(String s) throws IOException {
-        return null;
-    }
-
-    @Override
-    public ClientResponse post(String s, String s1) throws IOException {
-        return null;
-    }
-
-    @Override
-    public ClientResponse post(String s, String s1, File file) throws IOException {
-        return null;
-    }
-
-    @Override
-    public ClientResponse post(String s, String s1, String s2) throws IOException {
-        return null;
-    }
-
-    @Override
-    public ClientResponse get(String s, String s1) throws IOException {
-        return null;
-    }
-
-    @Override
-    public ClientResponse post(String s) throws IOException {
-        return null;
-    }
-
-    @Override
-    public ClientResponse delete(String s) throws IOException {
-        return null;
-    }
-
-    @Override
-    public ClientResponse delete(String s, String s1) throws IOException {
-        return null;
-    }
-
-    @Override
-    public ClientResponse delete(String s, String s1, String s2) throws IOException {
-        return null;
     }
 }
