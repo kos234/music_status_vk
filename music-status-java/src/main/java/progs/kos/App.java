@@ -5,7 +5,6 @@ import com.vk.api.sdk.exceptions.ApiParamException;
 import com.vk.api.sdk.objects.base.responses.OkResponse;
 import com.vk.api.sdk.objects.photos.responses.CreateAlbumResponse;
 import com.vk.api.sdk.objects.photos.responses.PhotoUploadResponse;
-import com.vk.api.sdk.client.TransportClient;
 import com.vk.api.sdk.client.VkApiClient;
 import com.vk.api.sdk.client.actors.UserActor;
 import com.vk.api.sdk.exceptions.ApiException;
@@ -56,8 +55,8 @@ public class App {
     public static void start(){
         final int TIME_SLEEP = 30 * 1000;
         final String AUTHORISATION_SPOTIFY = Base64.getEncoder().encodeToString("dde6a297cdc345059eda98c69ba722c0:ce45e9cbc7da47019b6540f9abe00a68".getBytes());
-        TransportClient transportClient = HttpTransportClient.getInstance();
-        VkApiClient vk = new VkApiClient(transportClient);
+        VkApiClient vk = new VkApiClient(HttpTransportClient.getInstance());
+        vk.setVersion("5.131");
         try {
             MySQL = connection(url, user_name, user_password);
             ResultSet start = mysqlQuery("SELECT `isStart` FROM `active_state`");
